@@ -18,66 +18,46 @@ import IconSideBar from "./components/IconSideBar.vue";
   </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style>
+#app {
+  display: flex;
+  height: 100vh;
+  font-family: "Arial", sans-serif;
+  margin-left: 5rem;
 }
 
-.logo {
+.sidebar {
+  width: 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar .logo {
   display: block;
-  margin: 0 auto 2rem;
+  margin-bottom: 20px;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.sidebar ul {
+  list-style: none;
+  padding: 0;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.sidebar ul li {
+  margin: 10px 0;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.sidebar ul li a {
+  text-decoration: none;
+  color: #333;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #fff;
+  overflow-y: auto;
+  margin-left: 5rem;
 }
 </style>
