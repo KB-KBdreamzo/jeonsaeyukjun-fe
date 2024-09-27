@@ -55,11 +55,11 @@ import IconSideBar from './components/IconSideBar.vue';
 }
 
 .main-content {
-  flex-grow: 1;
-  padding: 20px;
-  background-color: #fff;
-  overflow-y: auto;
-  margin-left: 5rem; 
+  //flex-grow: 1;
+  //padding: 20px;
+  //background-color: #fff;
+  //overflow-y: auto;
+  //margin-left: 5rem;
 }
 
 </style>
