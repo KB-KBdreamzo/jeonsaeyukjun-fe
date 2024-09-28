@@ -24,7 +24,7 @@ import IconSideBar from './components/IconSideBar.vue';
   display: flex;
   height: 100vh;
   font-family: 'Arial', sans-serif;
-  margin-left: 5rem; 
+  /* margin-left: 5rem;  */
 }
 
 .sidebar {
@@ -59,7 +59,7 @@ import IconSideBar from './components/IconSideBar.vue';
   padding: 20px;
   background-color: #fff;
   overflow-y: auto;
-  margin-left: 5rem; 
+  /* margin-left: 2rem;  */
 }
 
 </style>
