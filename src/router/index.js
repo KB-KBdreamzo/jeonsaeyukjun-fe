@@ -64,6 +64,11 @@ const router = createRouter({
       name: "mypageContract",
       component: MypageContractView,
     },
+    {
+      path: '/contract', 
+      name: 'contract',
+      component: () => import('../views/ContractCreation.vue')
+    }
   ],
 });
 export default router
