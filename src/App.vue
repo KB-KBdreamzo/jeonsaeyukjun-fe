@@ -1,15 +1,13 @@
 <template>
-  <div id="app">
     <div class="sidebar">
       <!-- 사이드바 메뉴 -->
       <IconSideBar />
     </div>
 
     <div class="main-content">
-      <SearchBar class="search-bar" @search="handleSearch" />
-      <router-view />
+      <!-- 페이지 내용은 여기서 로드됨 -->
+      <RouterView />
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -19,12 +17,6 @@ import SearchBar from './components/SearchBar.vue';  // 검색창 컴포넌트 �
 </script>
 
 <style>
-#app {
-  display: flex;
-  height: 100vh;
-  font-family: 'Arial', sans-serif;
-}
-
 .sidebar {
   width: 3rem;
   position: fixed;
