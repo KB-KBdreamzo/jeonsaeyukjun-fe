@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const ADDRESS_API_KEY = import.meta.env.ADDRESS_API_KEY;
+const ADDRESS_API_KEY = import.meta.env.VITE_ADDRESS_API_KEY;
 
 
 export const useAddressStore = defineStore('address', {
