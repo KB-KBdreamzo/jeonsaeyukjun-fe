@@ -12,7 +12,6 @@ import IconSideBar from "./components/IconSideBar.vue";
 
     <div class="main-content">
       <!-- 페이지 내용은 여기서 로드됨 -->
-      전체 내용
       <router-view />
     </div>
   </div>
@@ -21,13 +20,15 @@ import IconSideBar from "./components/IconSideBar.vue";
 <style>
 #app {
   display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
   height: 100vh;
   font-family: "Arial", sans-serif;
-  margin-left: 5rem;
+  /* margin-left: 2rem; */
 }
 
 .sidebar {
-  width: 2rem;
+  width: 4rem; /*기본설정 2rem */
   position: fixed;
   top: 0;
   left: 0;
@@ -54,10 +55,12 @@ import IconSideBar from "./components/IconSideBar.vue";
 }
 
 .main-content {
+  width: 800px; /* 중앙 콘텐츠의 너비 조절 */
+  max-width: 1200px; /* 최대 너비 설정 */
   flex-grow: 1;
   padding: 20px;
   background-color: #fff;
   overflow-y: auto;
-  margin-left: 5rem;
+  /* margin-left: 5rem; */
 }
 </style>
