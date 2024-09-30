@@ -23,6 +23,6 @@ const router = createRouter({
       component: InformationInputView
     }
   ]
-})
+});
 
 export default router
