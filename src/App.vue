@@ -56,7 +56,7 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
     </header>
 
     <div class="main-content pt-20">
-      <!-- 페이지 내용은 여기서 로드됨 -->
+      <SearchBar class="search-bar" @search="handleSearch" />
       <router-view />
     </div>
   </div>
