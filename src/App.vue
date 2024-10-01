@@ -6,23 +6,22 @@
     </div>
 
     <div class="main-content">
-      <SearchBar class="search-bar" @search="handleSearch" />
       <router-view />
     </div>
   </div>
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from 'vue-router';
-import IconSideBar from './components/IconSideBar.vue';
-import SearchBar from './components/SearchBar.vue';  // 검색창 컴포넌트 추가
+import { RouterLink, RouterView } from "vue-router";
+import IconSideBar from "./components/IconSideBar.vue";
+import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 추가
 </script>
 
 <style>
 #app {
   display: flex;
   height: 100vh;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 .sidebar {
@@ -42,6 +41,7 @@ import SearchBar from './components/SearchBar.vue';  // 검색창 컴포넌트 �
   padding: 0;
   position: relative;
   background-color: #fff;
+  flex-grow: 1;
 }
 
 .search-bar {
