@@ -2,7 +2,6 @@
 import { RouterLink, RouterView } from "vue-router";
 import IconSideBar from "./components/IconSideBar.vue";
 </script>
-
 <template>
   <div id="app">
     <!-- <div class="sidebar"> -->
