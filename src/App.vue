@@ -62,10 +62,4 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
   </div>
 </template>
 
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-import IconSideBar from "./components/IconSideBar.vue";
-import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 추가
-</script>
-
 <style></style>
