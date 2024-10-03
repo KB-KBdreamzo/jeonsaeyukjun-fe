@@ -6,10 +6,7 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
 
 <template>
   <div id="app">
-    <!-- <div class="sidebar"> -->
-    <!-- 사이드바 메뉴 -->
-    <!-- <IconSideBar /> -->
-    <!-- </div> -->
+    <!-- 헤더 영역 -->
     <header
       class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
     >
