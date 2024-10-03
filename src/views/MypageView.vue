@@ -2,7 +2,7 @@
   <div class="container mx-auto p-8">
     <!-- 프로필 섹션 -->
     <div
-      class="bg-gray-100 rounded-lg p-8 flex justify-between items-center mb-8"
+      class="bg-gray-100 rounded-lg p-8 flex justify-between items-center mb-16"
     >
       <div class="flex items-center">
         <div
@@ -20,39 +20,39 @@
         </div>
       </div>
       <button
-        class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+        class="bg-gray-800 text-white px-4 py-2 rounded-full hover:bg-gray-300"
       >
         EDIT
       </button>
     </div>
 
     <!-- 리포트 및 계약서 섹션을 좌우로 배치 -->
-    <div class="flex justify-between space-x-16">
+    <div class="flex justify-between space-x-16 mx-2">
       <!-- 리포트 조회 섹션 -->
       <div class="w-1/2">
-        <div class="mb-8">
+        <div class="mb-4">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">전세사기 리포트 조회</h2>
             <router-link to="/mypage/reports">
               <button
-                class="border border-gray-800 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                class="border bg-gray-800 text-white px-4 py-1 rounded-full hover:bg-gray-300 ml-auto"
               >
                 더보기
               </button>
             </router-link>
           </div>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             <li
               v-for="(report, index) in reportList"
               :key="index"
-              class="flex justify-between items-center p-4 bg-white border-b border-gray-200"
+              class="flex justify-between items-center bg-white border-b py-4 border-gray-200"
             >
               <span>{{ report.address }}</span>
               <span
-                class="px-4 py-1 rounded-full font-bold text-white"
-                :class="getScoreClass(report.score)"
+                class="px-4 py-1 rounded-full text-white ml-auto"
+                :class="getStatusClass(report.status)"
               >
-                {{ report.score }}점
+                {{ report.status }}
               </span>
             </li>
           </ul>
@@ -61,26 +61,26 @@
 
       <!-- 계약서 조회 섹션 -->
       <div class="w-1/2">
-        <div class="mb-8">
+        <div class="mb-4">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">계약서 조회</h2>
             <router-link to="/mypage/contracts">
               <button
-                class="border border-gray-800 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                class="border bg-gray-800 text-white px-4 py-1 rounded-full hover:bg-gray-300 ml-auto"
               >
                 더보기
               </button>
             </router-link>
           </div>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             <li
               v-for="(contract, index) in contractList"
               :key="index"
-              class="flex justify-between items-center p-4 bg-white border-b border-gray-200"
+              class="flex justify-between items-center py-4 bg-white border-b border-gray-200"
             >
               <span>{{ contract.address }}</span>
               <button
-                class="border border-gray-500 text-gray-500 px-4 py-1 rounded-lg hover:bg-gray-100"
+                class="text-gray-500 px-4 py-1 rounded-full hover:bg-gray-100 bg-buttonBeige"
               >
                 확인
               </button>
@@ -98,10 +98,10 @@ export default {
   data() {
     return {
       reportList: [
-        { address: "강서구 방화대로47가길 22", score: 52 },
-        { address: "강서구 양천로26길 24-10", score: 72 },
-        { address: "강서구 방화대로 351", score: 32 },
-        { address: "강서구 등촌로39마길 4", score: 18 },
+        { address: "강서구 방화대로47가길 22", status: "위험" },
+        { address: "강서구 양천로26길 24-10", status: "양호" },
+        { address: "강서구 방화대로 351", status: "보통" },
+        { address: "강서구 등촌로39마길 4", status: "안전" },
       ],
       contractList: [
         { address: "강서구 방화대로47가길 22" },
@@ -111,10 +111,11 @@ export default {
     };
   },
   methods: {
-    getScoreClass(score) {
-      if (score >= 70) return "bg-green-500";
-      if (score >= 50) return "bg-yellow-400";
-      return "bg-red-500";
+    getStatusClass(status) {
+      if (status === "안전") return "bg-green-400"; // 안전 - 연두색
+      if (status === "양호" || status === "보통") return "bg-yellow-300"; // 양호, 보통 - 노란색
+      if (status === "위험" || status === "주의") return "bg-red-400"; // 위험, 주의 - 빨간색
+      return "bg-gray-300"; // 상태가 없는 경우 기본 색상 (회색)
     },
   },
 };
