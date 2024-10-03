@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
 import IconSideBar from "./components/IconSideBar.vue";
+import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 추가
 </script>
 
 <template>
@@ -54,17 +55,11 @@ import IconSideBar from "./components/IconSideBar.vue";
       </nav>
     </header>
 
-    <div class="main-content">
+    <div class="main-content pt-20">
       <!-- 페이지 내용은 여기서 로드됨 -->
       <router-view />
     </div>
   </div>
 </template>
-
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-import IconSideBar from "./components/IconSideBar.vue";
-import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 추가
-</script>
 
 <style></style>
