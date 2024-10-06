@@ -61,7 +61,7 @@
           <tr>
             <th class="p-4 text-left" style="width: 30%">주소지</th>
             <th class="p-4 text-left" style="width: 25%">전세금</th>
-            <th class="p-4 text-left" style="width: 23%">안전 진단</th>
+            <th class="p-4 text-left" style="width: 21%">안전 진단</th>
             <th class="p-4 text-left" style="width: 25%">생성일</th>
             <th class="p-4 text-left w-40">조회 및 삭제</th>
           </tr>
