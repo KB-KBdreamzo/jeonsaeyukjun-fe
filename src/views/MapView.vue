@@ -58,12 +58,6 @@ export default {
       };
       map = new kakao.maps.Map(container, options);
 
-      var mapTypeControl = new kakao.maps.MapTypeControl();
-      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-
-      var zoomControl = new kakao.maps.ZoomControl();
-      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-
       kakao.maps.event.addListener(map, "idle", () => {
         if (isShowingPrice.value) {
           fetchPriceDataForVisibleArea();
@@ -129,7 +123,7 @@ export default {
             const color =
                 incidentCount > averageIncidentCount
                     ? "rgba(255, 0, 0, 0.9)"
-                    : "rgba(255, 99, 71, 0.6)";
+                    : "rgb(255,127,0)";
             const info = ` ${incidentCount}건`;
 
             createTextOverlay(latitude, longitude, regionName, info, color);
@@ -180,7 +174,7 @@ export default {
               if (coordinates) {
                 const { lat, lng } = coordinates;
                 const jeonsePriceInEok = (jeonsePrice / 10000).toFixed(1);
-                createTextOverlay(lat, lng, item.단지명, `매매가: ${jeonsePriceInEok}억`, "rgba(255, 99, 71, 0.7)");
+                createTextOverlay(lat, lng, item.단지명, `매매가: ${jeonsePriceInEok}억`, "rgb(16,59,218)");
               }
             }
           }
@@ -275,14 +269,14 @@ export default {
 
 #map {
   width: 100%;
-  height: 100%;
-  min-height: 400px;
+  height: 100%; /* 지도가 부모 요소의 높이를 꽉 채우도록 설정 */
+  min-height: calc(100vh - 65px); /* 하단부 짤림을 방지 */
 }
 
 .top-right-buttons {
   position: absolute;
-  top: 3px;
-  right: 130px;
+  top: 34px;
+  right: 10px;  /* 여기서 right 값을 조정하여 위치 변경 가능 */
   display: flex;
   gap: 10px;
   z-index: 1000;
@@ -293,7 +287,7 @@ export default {
   padding: 7px 15px;
   font-size: 16px;
   font-weight: bold;
-  color: #103bda;
+  color: #0a0a0a;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   border: none;
   border-radius: 20px;
@@ -301,11 +295,11 @@ export default {
 }
 
 .top-button:hover {
-  background-color: #ffc107;
+  background-color: #1D4ED8;
 }
 
 .top-button.active-button {
-  background-color: #ffc107;
+  background-color: #1D4ED8;
   color: #ffffff;
 }
 

@@ -6,7 +6,6 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
 
 <template>
   <div id="app">
-    <!-- 헤더 영역 -->
     <header
       class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
     >
@@ -52,10 +51,42 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
       </nav>
     </header>
 
-    <div class="main-content pt-20">
+    <div class="main-content pt-16">
       <router-view />
     </div>
   </div>
 </template>
 
-<style></style>
+<style>
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow: hidden;
+  padding-top: 65px;
+}
+
+#map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+</style>
