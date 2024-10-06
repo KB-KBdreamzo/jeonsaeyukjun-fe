@@ -16,7 +16,6 @@
             class="bg-black text-white px-4 py-2 rounded-full flex items-center hover:bg-gray-300 w-28"
           >
             <span class="flex-grow text-center">{{ sortButtonText }}</span>
-            <!-- sortButtonText computed property를 사용 -->
             <svg
               class="ml-2 w-4 h-4"
               fill="none"
@@ -55,53 +54,57 @@
     </div>
 
     <!-- 테이블 섹션 -->
-    <table class="w-full bg-white rounded-lg">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="p-4 text-left">주소지</th>
-          <th class="p-4 text-left">전세금</th>
-          <th class="p-4 text-left">안전 진단</th>
-          <th class="p-4 text-left">생성일</th>
-          <th class="p-4 text-left w-40">조회 및 삭제</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(report, index) in paginatedReports"
-          :key="index"
-          class="border-b hover:bg-gray-50"
-        >
-          <td class="p-4">{{ report.address }}</td>
-          <td class="p-4">{{ formatPrice(report.deposit) }}</td>
-          <td class="p-4">
-            <span
-              class="px-4 py-1.5 rounded-full text-white"
-              :class="getStatusClass(report.status)"
-            >
-              {{ report.status }}
-            </span>
-          </td>
-          <td class="p-4">{{ report.createdAt }}</td>
-          <td class="p-4 flex space-x-2 justify-end">
-            <button
-              @click="viewReport(report)"
-              class="bg-buttonBeige text-gray-500 px-4 py-1 rounded-full hover:bg-gray-200"
-            >
-              확인
-            </button>
-            <button
-              @click="deleteReport(index)"
-              class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-300"
-            >
-              삭제
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="min-h-[400px]">
+      <!-- 테이블 섹션을 감싸는 div에 최소 높이 설정 -->
+      <table class="w-full bg-white rounded-lg table-fixed">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-4 text-left" style="width: 30%">주소지</th>
+            <th class="p-4 text-left" style="width: 25%">전세금</th>
+            <th class="p-4 text-left" style="width: 23%">안전 진단</th>
+            <th class="p-4 text-left" style="width: 25%">생성일</th>
+            <th class="p-4 text-left w-40">조회 및 삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(report, index) in paginatedReports"
+            :key="index"
+            class="border-b hover:bg-gray-50"
+          >
+            <td class="p-4">{{ report.address }}</td>
+            <td class="p-4">{{ formatPrice(report.deposit) }}</td>
+            <td class="p-4">
+              <span
+                class="px-4 py-1.5 rounded-full text-white"
+                :class="getStatusClass(report.status)"
+              >
+                {{ report.status }}
+              </span>
+            </td>
+            <td class="p-4">{{ report.createdAt }}</td>
+            <td class="p-4 flex space-x-2 justify-end">
+              <button
+                @click="viewReport(report)"
+                class="bg-buttonBeige text-gray-500 px-4 py-1 rounded-full hover:bg-gray-200"
+              >
+                확인
+              </button>
+              <button
+                @click="deleteReport(index)"
+                class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-300"
+              >
+                삭제
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- 페이지네이션 섹션 -->
     <div class="flex justify-end space-x-2 mt-6">
+      <!-- 페이지 섹션에 최소 높이 설정 -->
       <button
         @click="goToPage(page)"
         v-for="page in totalPages"
@@ -131,6 +134,7 @@ export default {
       currentPage: 1, // 현재 페이지
       perPage: 5, // 페이지당 항목 수
       reports: [
+        // 기존의 데이터 목록
         {
           address: "강서구 방화대로47가길 22",
           deposit: 420000000,
@@ -162,34 +166,63 @@ export default {
           createdAt: "2024.09.16 15:00",
         },
         {
+          address: "강서구 방화대로47가길 22",
+          deposit: 420000000,
+          status: "양호",
+          createdAt: "2024.09.11 11:00",
+        },
+        {
+          address: "강서구 양천로26길 24-10",
+          deposit: 280000000,
+          status: "위험",
+          createdAt: "2024.09.11 15:00",
+        },
+        {
+          address: "강서구 방화대로 351",
+          deposit: 370000000,
+          status: "주의",
+          createdAt: "2024.09.12 18:00",
+        },
+        {
+          address: "강서구 등촌로39마길 4",
+          deposit: 210000000,
+          status: "보통",
+          createdAt: "2024.09.13 8:00",
+        },
+        {
           address: "양천구 목동동로12길 55-9",
           deposit: 210000000,
           status: "양호",
           createdAt: "2024.09.16 15:00",
         },
         {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          status: "안전",
-          createdAt: "2024.09.16 15:00",
+          address: "강서구 방화대로47가길 22",
+          deposit: 420000000,
+          status: "양호",
+          createdAt: "2024.09.11 11:00",
         },
         {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          status: "안전",
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
+          address: "강서구 양천로26길 24-10",
+          deposit: 280000000,
           status: "위험",
-          createdAt: "2024.09.16 15:00",
+          createdAt: "2024.09.11 15:00",
+        },
+        {
+          address: "강서구 방화대로 351",
+          deposit: 370000000,
+          status: "주의",
+          createdAt: "2024.09.12 18:00",
+        },
+        {
+          address: "강서구 등촌로39마길 4",
+          deposit: 210000000,
+          status: "보통",
+          createdAt: "2024.09.13 8:00",
         },
       ],
     };
   },
   computed: {
-    // 검색어와 정렬 조건에 따른 리포트 필터링
     filteredReports() {
       let filtered = this.reports.filter((report) =>
         report.address.includes(this.searchQuery)
@@ -200,17 +233,14 @@ export default {
             (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
           );
     },
-    // 현재 페이지에 해당하는 항목만 반환
     paginatedReports() {
       const start = (this.currentPage - 1) * this.perPage;
       const end = this.currentPage * this.perPage;
       return this.filteredReports.slice(start, end);
     },
-    // 총 페이지 수 계산
     totalPages() {
       return Math.ceil(this.filteredReports.length / this.perPage);
     },
-    // 현재 정렬 상태에 따라 버튼의 텍스트 변경
     sortButtonText() {
       return this.sortKey === "latest" ? "최신순" : "오래된순";
     },
@@ -230,10 +260,10 @@ export default {
       return value.toLocaleString();
     },
     getStatusClass(status) {
-      if (status === "안전") return "bg-green-400"; // 안전 - 연두색
-      if (status === "양호" || status === "보통") return "bg-yellow-300"; // 양호, 보통 - 노란색
-      if (status === "위험" || status === "주의") return "bg-red-400"; // 위험, 주의 - 빨간색
-      return "bg-gray-300"; // 상태가 없는 경우 기본 색상 (회색)
+      if (status === "안전") return "bg-green-400";
+      if (status === "양호" || status === "보통") return "bg-yellow-300";
+      if (status === "위험" || status === "주의") return "bg-red-400";
+      return "bg-gray-300";
     },
   },
 };

@@ -54,41 +54,43 @@
     </div>
 
     <!-- 테이블 섹션 -->
-    <table class="w-full bg-white rounded-lg">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="p-4 text-left">주소지</th>
-          <th class="p-4 text-left">전세금</th>
-          <th class="p-4 text-left">생성일</th>
-          <th class="p-4 text-left w-40">조회 및 삭제</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(report, index) in paginatedReports"
-          :key="index"
-          class="border-b hover:bg-gray-50"
-        >
-          <td class="p-4">{{ report.address }}</td>
-          <td class="p-4">{{ formatPrice(report.deposit) }}</td>
-          <td class="p-4">{{ report.createdAt }}</td>
-          <td class="p-4 flex space-x-2 justify-end">
-            <button
-              @click="viewReport(report)"
-              class="bg-buttonBeige text-gray-500 px-4 py-1 rounded-full hover:bg-gray-200"
-            >
-              확인
-            </button>
-            <button
-              @click="deleteReport(index)"
-              class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-300"
-            >
-              삭제
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="min-h-[400px]">
+      <table class="w-full bg-white rounded-lg table-fixed">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-4 text-left" style="width: 40%">주소지</th>
+            <th class="p-4 text-left" style="width: 30%">전세금</th>
+            <th class="p-4 text-left" style="width: 30%">생성일</th>
+            <th class="p-4 text-left w-40">조회 및 삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(report, index) in paginatedReports"
+            :key="index"
+            class="border-b hover:bg-gray-50"
+          >
+            <td class="p-4">{{ report.address }}</td>
+            <td class="p-4">{{ formatPrice(report.deposit) }}</td>
+            <td class="p-4">{{ report.createdAt }}</td>
+            <td class="p-4 flex space-x-2 justify-end">
+              <button
+                @click="viewReport(report)"
+                class="bg-buttonBeige text-gray-500 px-4 py-1 rounded-full hover:bg-gray-200"
+              >
+                확인
+              </button>
+              <button
+                @click="deleteReport(index)"
+                class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-300"
+              >
+                삭제
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- 페이지네이션 섹션 -->
     <div class="flex justify-end space-x-2 mt-6">
