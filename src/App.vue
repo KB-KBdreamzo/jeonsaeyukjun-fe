@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!-- 헤더 영역 -->
     <header
         class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
     >
@@ -30,17 +29,43 @@
       </nav>
     </header>
 
-    <!-- 메인 콘텐츠 -->
     <div class="main-content pt-16">
-      <!-- 페이지 내용은 여기서 로드됨 -->
       <router-view />
     </div>
   </div>
 </template>
 
 <style>
-.main-content {
-  padding-top: 65px;
-  overflow: hidden
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow: hidden;
+  padding-top: 65px;
+}
+
+#map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+
 </style>
