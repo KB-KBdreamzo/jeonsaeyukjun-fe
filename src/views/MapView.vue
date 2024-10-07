@@ -258,40 +258,39 @@ export default {
   },
 };
 </script>
-
-<style scoped>
+<style>
 #map-container {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
+position: relative;
+height: 100vh;
+width: 100%;
+overflow: hidden;
 }
 
 #map {
-  width: 100%;
-  height: 100%; /* 지도가 부모 요소의 높이를 꽉 채우도록 설정 */
-  min-height: calc(100vh - 65px); /* 하단부 짤림을 방지 */
+width: 100%;
+height: 100%; /* 100vh로 부모 컨테이너 높이를 꽉 채우기 */
 }
 
 .top-right-buttons {
-  position: absolute;
-  top: 34px;
-  right: 10px;  /* 여기서 right 값을 조정하여 위치 변경 가능 */
-  display: flex;
-  gap: 10px;
-  z-index: 1000;
+position: absolute;
+top: 44px; /* 검색창과의 간격 조정 */
+right: 20px; /* 오른쪽 여백 조정 */
+display: flex;
+gap: 10px;
+z-index: 1000; /* 지도 위에 버튼을 표시 */
 }
 
 .top-button {
-  background-color: #ffffff;
-  padding: 7px 15px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #0a0a0a;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
+background-color: #ffffff;
+padding: 7px 15px;
+font-size: 16px;
+font-weight: bold;
+color: #0a0a0a;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+border: none;
+border-radius: 20px;
+cursor: pointer;
+z-index: 1001; /* 버튼이 지도보다 위에 표시되도록 z-index 조정 */
 }
 
 .top-button:hover {
@@ -299,33 +298,33 @@ export default {
 }
 
 .top-button.active-button {
-  background-color: #1D4ED8;
-  color: #ffffff;
+background-color: #1D4ED8;
+color: #ffffff;
 }
 
 .map-controls {
-  position: absolute;
-  bottom: 70px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
+position: absolute;
+bottom: 70px;
+right: 20px;
+display: flex;
+flex-direction: column;
+z-index: 1000;
 }
 
 .control-button {
-  width: 40px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  padding: 6px;
-  margin-bottom: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
+width: 40px;
+background: white;
+border: 1px solid #ccc;
+border-radius: 25px;
+padding: 6px;
+margin-bottom: 5px;
+font-size: 16px;
+cursor: pointer;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+z-index: 1001; /* 지도 위에 표시되도록 z-index 설정 */
 }
 
 .control-button:hover {
-  background-color: #f0f0f0;
+background-color: #f0f0f0;
 }
 </style>
