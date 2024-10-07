@@ -1,34 +1,36 @@
 <template>
-  <div class="search-bar">
-    <div class="search-icon" @click="toggleSidebar">
-      <img src="../assets/searchIcon.svg" alt="돋보기" />
+  <div class="search-bar-container" @click.stop>
+    <div class="search-bar" :class="{ expanded: isExpanded }" @click="expandSearch">
+      <div class="search-icon">
+        <img src="../assets/searchIcon.svg" alt="돋보기"/>
+      </div>
+
+      <input
+          type="text"
+          placeholder="장소, 버스, 지하철, 도로 검색"
+          class="search-input"
+          v-model="searchQuery"
+          @keydown.enter="onSearch"
+          @blur="collapseSearch"
+      />
     </div>
 
-    <input
-        type="text"
-        placeholder="장소, 버스, 지하철, 도로 검색"
-        class="search-input"
-        v-model="searchQuery"
-        @keydown.enter="onSearch"
-    />
-
-    <div :class="['sidebar', isSidebarVisible ? 'open' : '']">
-      <div class="sidebar-header">
-        <button @click="closeSidebar">닫기</button>
+    <transition name="fade">
+      <div v-if="isExpanded" class="search-history">
+        <ul>
+          <li
+              v-for="(history, index) in searchHistory"
+              :key="index"
+              class="history-item"
+          >
+            <span @mousedown="selectHistory(history)">{{ history }}</span>
+            <span class="delete-icon" @mousedown.stop="deleteHistory(index)">×</span>
+          </li>
+        </ul>
       </div>
-      <div class="sidebar-content">
-        <input
-            type="text"
-            placeholder="장소, 버스, 지하철, 도로 검색"
-            class="modal-search-input"
-            v-model="searchQuery"
-            @keydown.enter="onSearch"
-        />
-        <button @click="onSearch">검색</button>
-      </div>
-    </div>
+    </transition>
 
-    <div v-if="isSidebarVisible" class="overlay" @click="closeSidebar"></div>
+    <div v-if="isExpanded" class="overlay" @click="collapseSearch"></div>
   </div>
 </template>
 
@@ -37,50 +39,89 @@ export default {
   data() {
     return {
       searchQuery: "",
-      isSidebarVisible: false,
+      isExpanded: false,
+      searchHistory: [],
     };
   },
+  mounted() {
+    this.loadSearchHistory();
+  },
   methods: {
-    toggleSidebar() {
-      this.isSidebarVisible = true;
+    expandSearch() {
+      this.isExpanded = true;
     },
-    closeSidebar() {
-      this.isSidebarVisible = false;
+    collapseSearch() {
+      this.isExpanded = false;
     },
     onSearch() {
       if (this.searchQuery.trim() === "") {
         alert("검색어를 입력하세요.");
         return;
       }
-      console.log("검색어:", this.searchQuery);
-
+      this.saveSearchQuery(this.searchQuery);
       this.$emit("search", this.searchQuery);
-      this.closeSidebar();
+      this.collapseSearch();
+    },
+    selectHistory(history) {
+      this.searchQuery = history;
+      this.$emit("search", history);
+      this.collapseSearch();
+    },
+    saveSearchQuery(query) {
+      let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+
+      if (!history.includes(query)) {
+        history.unshift(query);
+        if (history.length > 5) {
+          history.pop();
+        }
+        localStorage.setItem("searchHistory", JSON.stringify(history));
+        this.searchHistory = history;
+      }
+    },
+    loadSearchHistory() {
+      const history = JSON.parse(localStorage.getItem("searchHistory"));
+      if (history) {
+        this.searchHistory = history;
+      }
+    },
+    deleteHistory(index) {
+      this.searchHistory.splice(index, 1);
+      localStorage.setItem("searchHistory", JSON.stringify(this.searchHistory));
     },
   },
 };
 </script>
 
+
 <style scoped>
-/* 지도 상단에 고정된 검색바 */
+.search-bar-container {
+  position: relative;
+  z-index: 1000;
+}
+
 .search-bar {
   position: absolute;
-  top: 20px;
+  top: 30px;
   left: 20px;
   width: 400px;
-  z-index: 1000;
+  z-index: 1001;
   display: flex;
   align-items: center;
   background-color: white;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: height 0.3s ease;
 }
 
-/* 돋보기 아이콘을 검색창 안 왼쪽으로 이동 */
+.search-bar.expanded {
+  height: 62px;
+}
+
 .search-input {
   flex-grow: 1;
-  padding: 8px 8px 8px 40px; /* 왼쪽에 아이콘 공간을 위한 패딩 */
+  padding: 8px 8px 8px 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
   outline: none;
@@ -89,60 +130,75 @@ export default {
 
 .search-icon {
   position: absolute;
-  left: 10px; /* 검색창 내부 왼쪽에 배치 */
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
 }
 
 .search-icon img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  display: block;
 }
 
-/* 사이드바 스타일 */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -300px; /* 기본적으로 숨김 */
-  width: 300px;
-  height: 100vh;
+.search-history {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  width: 400px;
+  max-height: 200px;
   background-color: white;
-  z-index: 2000;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease; /* 왼쪽으로 이동 애니메이션 */
-}
-
-.sidebar.open {
-  left: 0; /* 사이드바가 열릴 때 */
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.sidebar-content {
-  margin-top: 20px;
-}
-
-/* 모달창에서 검색어 입력창에 테두리 추가 */
-.modal-search-input {
-  width: 100%;
+  border-radius: 0 0 10px 10px;
+  overflow-y: auto;
+  z-index: 1000;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  font-size: 16px;
-  outline: none;
 }
 
-/* 오버레이 */
+.search-history ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background-color: #f5f5f5;
+}
+
+
+.delete-icon {
+  color: black;
+  cursor: pointer;
+  font-size: 18px;
+  padding-left: 10px;
+}
+
+.delete-icon:hover {
+  color: darkred;
+}
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1500;
+  z-index: 999;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>
