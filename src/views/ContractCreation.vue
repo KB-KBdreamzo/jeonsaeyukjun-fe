@@ -22,7 +22,12 @@
                     title="부동산의 표시" 
                     @update-property="handlePropertyInput"
                 />
-                <ContractSection title="임대차계약의 내용" />
+                <LeaseContractContent
+                    title="임대차계약의 내용"
+                    :leaseStartDate="leaseStartDate"
+                    :leaseEndDate="leaseEndDate"
+                    @update-lease-dates="handleLeaseDateUpdate"
+                />
                 <ContractSection title="특약 사항" />
             </div>
         </section>
@@ -40,6 +45,11 @@
                 :buildingArea="buildingArea"
                 :rentalPortion="rentalPortion"
                 :rentalArea="rentalArea"
+                :leaseStartDate="leaseStartDate"
+                :leaseEndDate="leaseEndDate"
+                :depositAmount="depositAmount"
+                :unpaidNationalAndLocalTax="unpaidNationalAndLocalTax"
+                :priorityConfirmedDateDetails="priorityConfirmedDateDetails"
             />
         </section>
     </main>
@@ -50,6 +60,7 @@ import { defineComponent } from 'vue';
 import ContractSection from '../components/ContractSection.vue';
 import LandlordTenantInfo from '@/components/LandlordTenantInfo.vue';
 import PropertyDescription from '@/components/PropertyDescription.vue';
+import LeaseContractContent from '@/components/LeaseContractContent.vue';
 import ContractDisplay from '@/components/ContractDisplay.vue';
 
 export default defineComponent({
@@ -58,6 +69,7 @@ export default defineComponent({
         ContractDisplay,
         LandlordTenantInfo,
         PropertyDescription,
+        LeaseContractContent,
         ContractSection,
     },
     data() {
@@ -70,7 +82,12 @@ export default defineComponent({
             buildingStructure: '', // 추가된 부분
             buildingArea: '', // 추가된 부분
             rentalPortion: '', // 추가된 부분
-            rentalArea: '' // 추가된 부분
+            rentalArea: '', // 추가된 부분
+            leaseStartDate: '',
+            leaseEndDate: '',
+            depositAmount: 0,
+            unpaidNationalAndLocalTax: '',
+            priorityConfirmedDateDetails: ''
         };
     },
     methods: {
@@ -96,6 +113,19 @@ export default defineComponent({
                 this.rentalPortion = value;
             } else if (type === 'rentalArea') {
                 this.rentalArea = value;
+            }
+        },
+        handleLeaseDateUpdate(type, value) {
+            if (type === 'leaseStartDate') {
+                this.leaseStartDate = value;
+            } else if (type === 'leaseEndDate') {
+                this.leaseEndDate = value;
+            } else if (type === 'deposit') {
+                this.depositAmount = value;
+            } else if (type === 'unpaidNationalAndLocalTax') {
+                this.unpaidNationalAndLocalTax = value;
+            } else if (type === 'priorityConfirmedDateDetails') {
+                this.priorityConfirmedDateDetails = value;
             }
         }
     }
