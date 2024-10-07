@@ -49,6 +49,7 @@ export default {
     const markers = ref([]);
     const isShowingPrice = ref(false);
     const isShowingIncident = ref(false);
+    const currentMarker = ref(null);
 
     const initMap = () => {
       const container = document.getElementById("map");
@@ -65,6 +66,103 @@ export default {
           fetchIncidentData();
         }
       });
+    };
+
+    const getCoordinatesFromAddress = async (query) => {
+      try {
+        const apiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
+        const response = await axios.get(
+            "https://dapi.kakao.com/v2/local/search/address.json",
+            {
+              params: { query },
+              headers: { Authorization: `KakaoAK ${apiKey}` },
+            }
+        );
+
+        if (response.data.documents.length > 0) {
+          const { x, y } = response.data.documents[0];
+          return { lat: parseFloat(y), lng: parseFloat(x) };
+        } else {
+          console.error("주소로 좌표를 찾을 수 없습니다.");
+        }
+      } catch (error) {
+        console.error("주소를 좌표로 변환하는 데 실패했습니다:", error);
+      }
+      return null;
+    };
+
+    const placeMarker = (lat, lng) => {
+      if (currentMarker.value) {
+        currentMarker.value.setMap(null);
+      }
+
+      const position = new kakao.maps.LatLng(lat, lng);
+      const marker = new kakao.maps.Marker({
+        position,
+      });
+
+      marker.setMap(map);
+      currentMarker.value = marker;
+    };
+
+    const moveToSearchedLocation = async (query) => {
+      const coordinates = await getCoordinatesFromAddress(query);
+      if (coordinates) {
+        const { lat, lng } = coordinates;
+        const locPosition = new kakao.maps.LatLng(lat, lng);
+        map.setCenter(locPosition);
+        placeMarker(lat, lng);
+      }
+    };
+
+    const fetchPriceDataForVisibleArea = async () => {
+      try {
+        const center = map.getCenter();
+        const lat = center.getLat();
+        const lng = center.getLng();
+
+        const regionResponse = await axios.get(
+            "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
+            {
+              params: { x: lng, y: lat },
+              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
+            }
+        );
+
+        if (!regionResponse.data.documents || regionResponse.data.documents.length === 0) {
+          console.error("법정동코드가 없습니다.");
+          return;
+        }
+
+        const lawCode = regionResponse.data.documents[0].code;
+        const priceResponse = await axios.get(
+            "https://api.kbland.kr/land-price/price/fastPriceInfo",
+            {
+              params: { 법정동코드: lawCode, 유형: 2, 거래유형: 0 },
+            }
+        );
+
+        const priceData = priceResponse.data.dataBody?.data;
+        if (Array.isArray(priceData)) {
+          removeOverlays();
+          for (const item of priceData) {
+            if (item.매매 && item.매매.length > 0) {
+              const address = item.주소;
+              const jeonsePrice = item.매매[0].일반평균;
+              const coordinates = await getCoordinatesFromAddress(address);
+              if (coordinates) {
+                const { lat, lng } = coordinates;
+                const jeonsePriceInEok = (jeonsePrice / 10000).toFixed(1);
+                createTextOverlay(lat, lng, item.단지명, `매매가: ${jeonsePriceInEok}억`, "rgb(16,59,218)");
+              }
+            }
+          }
+        } else {
+          console.error("priceData는 배열이어야 합니다.", priceData);
+        }
+      } catch (error) {
+        console.error("시세 정보를 불러오는 데 실패했습니다:", error.response?.data || error.message);
+      }
     };
 
     const createTextOverlay = (latitude, longitude, regionName, info, color) => {
@@ -136,78 +234,6 @@ export default {
       }
     };
 
-    const fetchPriceDataForVisibleArea = async () => {
-      try {
-        const center = map.getCenter();
-        const lat = center.getLat();
-        const lng = center.getLng();
-
-        const regionResponse = await axios.get(
-            "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
-            {
-              params: { x: lng, y: lat },
-              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
-            }
-        );
-
-        if (!regionResponse.data.documents || regionResponse.data.documents.length === 0) {
-          console.error("법정동코드가 없습니다.");
-          return;
-        }
-
-        const lawCode = regionResponse.data.documents[0].code;
-        const priceResponse = await axios.get(
-            "https://api.kbland.kr/land-price/price/fastPriceInfo",
-            {
-              params: { 법정동코드: lawCode, 유형: 2, 거래유형: 0 },
-            }
-        );
-
-        const priceData = priceResponse.data.dataBody?.data;
-        if (Array.isArray(priceData)) {
-          removeOverlays();
-          for (const item of priceData) {
-            if (item.매매 && item.매매.length > 0) {
-              const address = item.주소;
-              const jeonsePrice = item.매매[0].일반평균;
-              const coordinates = await getCoordinatesFromAddress(address);
-              if (coordinates) {
-                const { lat, lng } = coordinates;
-                const jeonsePriceInEok = (jeonsePrice / 10000).toFixed(1);
-                createTextOverlay(lat, lng, item.단지명, `매매가: ${jeonsePriceInEok}억`, "rgb(16,59,218)");
-              }
-            }
-          }
-        } else {
-          console.error("priceData는 배열이어야 합니다.", priceData);
-        }
-      } catch (error) {
-        console.error("시세 정보를 불러오는 데 실패했습니다:", error.response?.data || error.message);
-      }
-    };
-
-    const getCoordinatesFromAddress = async (address) => {
-      try {
-        const response = await axios.get(
-            "https://dapi.kakao.com/v2/local/search/address.json",
-            {
-              params: { query: address },
-              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
-            }
-        );
-
-        if (response.data.documents.length > 0) {
-          const { x, y } = response.data.documents[0];
-          return { lat: parseFloat(y), lng: parseFloat(x) };
-        } else {
-          console.error("주소로 좌표를 찾을 수 없습니다.");
-        }
-      } catch (error) {
-        console.error("주소를 좌표로 변환하는 데 실패했습니다.", error);
-      }
-      return null;
-    };
-
     const showJeonsePrices = () => {
       isShowingPrice.value = true;
       isShowingIncident.value = false;
@@ -233,98 +259,88 @@ export default {
     });
 
     return {
-      isShowingPrice,
-      isShowingIncident,
+      moveToSearchedLocation,
       showJeonsePrices,
       showIncidentData,
-      moveToCurrentLocation() {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const locPosition = new kakao.maps.LatLng(lat, lon);
-            map.setCenter(locPosition);
-          });
-        } else {
-          alert("현재 위치를 찾을 수 없습니다.");
-        }
-      },
+      isShowingPrice,
+      isShowingIncident,
     };
   },
   methods: {
-    handleSearch(searchQuery) {
-      console.log("입력된 검색어:", searchQuery);
+    async handleSearch(searchQuery) {
+      await this.moveToSearchedLocation(searchQuery);
     },
   },
 };
 </script>
-<style>
+
+<style scoped>
 #map-container {
-position: relative;
-height: 100vh;
-width: 100%;
-overflow: hidden;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
 #map {
-width: 100%;
-height: 100%; /* 100vh로 부모 컨테이너 높이를 꽉 채우기 */
+  width: 100%;
+  height: 100%;
 }
 
 .top-right-buttons {
-position: absolute;
-top: 44px; /* 검색창과의 간격 조정 */
-right: 20px; /* 오른쪽 여백 조정 */
-display: flex;
-gap: 10px;
-z-index: 1000; /* 지도 위에 버튼을 표시 */
+  position: absolute;
+  top: 44px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
 }
 
 .top-button {
-background-color: #ffffff;
-padding: 7px 15px;
-font-size: 16px;
-font-weight: bold;
-color: #0a0a0a;
-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-border: none;
-border-radius: 20px;
-cursor: pointer;
-z-index: 1001; /* 버튼이 지도보다 위에 표시되도록 z-index 조정 */
+  background-color: #ffffff;
+  padding: 7px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #0a0a0a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 1001;
 }
 
 .top-button:hover {
-  background-color: #1D4ED8;
+  background-color: #1d4ed8;
 }
 
 .top-button.active-button {
-background-color: #1D4ED8;
-color: #ffffff;
+  background-color: #1d4ed8;
+  color: #ffffff;
 }
 
 .map-controls {
-position: absolute;
-bottom: 70px;
-right: 20px;
-display: flex;
-flex-direction: column;
-z-index: 1000;
+  position: absolute;
+  bottom: 70px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
 }
 
 .control-button {
-width: 40px;
-background: white;
-border: 1px solid #ccc;
-border-radius: 25px;
-padding: 6px;
-margin-bottom: 5px;
-font-size: 16px;
-cursor: pointer;
-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-z-index: 1001; /* 지도 위에 표시되도록 z-index 설정 */
+  width: 40px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 6px;
+  margin-bottom: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
 }
 
 .control-button:hover {
-background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 </style>
