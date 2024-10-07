@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-8">
+  <div class="container mx-auto p-8 pt-12">
     <!-- 프로필 섹션 -->
     <div
       class="bg-gray-100 rounded-lg p-8 flex justify-between items-center mb-16"
@@ -16,14 +16,9 @@
         </div>
         <div>
           <h2 class="text-3xl font-bold">아자핑</h2>
-          <p class="text-gray-600">yundabin0608@naver.com</p>
+          <p class="text-gray-600 mt-2">yundabin0608@naver.com</p>
         </div>
       </div>
-      <button
-        class="bg-gray-800 text-white px-4 py-2 rounded-full hover:bg-gray-300"
-      >
-        EDIT
-      </button>
     </div>
 
     <!-- 리포트 및 계약서 섹션을 좌우로 배치 -->

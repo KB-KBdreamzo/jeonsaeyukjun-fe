@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-8">
+  <div class="container mx-auto p-8 pt-12">
     <!-- 페이지 제목 및 검색바 -->
     <div class="flex justify-between items-center mb-12 mt-8">
       <h1 class="text-2xl font-bold">나의 전세사기 리포트</h1>
