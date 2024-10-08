@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const useRegisterStore = defineStore('registerStore', {
   state: () => ({
-    registerData: [], 
+    registerData: {}, 
     error: null,        
   }),
   actions: {
@@ -17,9 +17,14 @@ export const useRegisterStore = defineStore('registerStore', {
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
+        console.log(response)
         this.registerData = response.data; 
       } catch (error) {
-        console.error('Error fetching register data:', error);
+        if (error.response.status==400){
+          this.error = "등기부등본 파일이 아닙니다."
+        } else {
+          console.error('Error fetching register data:', error);
+        }
         this.error = '파일 처리 중 오류가 발생했습니다.';
       }
     },

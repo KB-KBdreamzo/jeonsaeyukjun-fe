@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import InformationInputView from '../views/report/InformationInput.vue'
-import ReportPage from "@/views/ReportView.vue";
+import ReportInputView from '@/views/report/ReportInputView.vue'
+import ReportResultView from "@/views/report/ReportResultView.vue";
 import MapView from "@/views/MapView.vue";
 
 
@@ -10,17 +10,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: MapView
+      component: MapView,
     },
     {
-      path: '/report',
-      name: 'ReportPage',
-      component: ReportPage,
+      path: '/report/result',
+      name: 'ReportResultPage',
+      component: ReportResultView,
     },
     {
-      path: '/report/informationInput',
-      name: 'InformationInputPage',
-      component: InformationInputView
+      path: '/report/input',
+      name: 'ReportInputPage',
+      component: ReportInputView,
     }
   ]
 });

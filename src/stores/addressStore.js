@@ -32,6 +32,7 @@ export const useAddressStore = defineStore('address', {
 
     selectAddress(address) {
       this.selectedAddress = address; 
+      console.log(">>>",this.selectedAddress);
     },
 
   },

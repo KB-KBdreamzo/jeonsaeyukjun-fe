@@ -75,12 +75,11 @@ import SearchBar from './components/SearchBar.vue';  // 검색창 컴포넌트 �
 }
 
 .main-content {
-  width: 800px; /* 중앙 콘텐츠의 너비 조절 */
-  max-width: 1200px; /* 최대 너비 설정 */
-  flex-grow: 1;
-  padding: 20px;
+  display: flex;  
+  flex-direction: column;
+  row-gap: 50px;
+  align-items: center;
   background-color: #fff;
   overflow-y: auto;
-  /* margin-left: 5rem; */
 }
 </style>
