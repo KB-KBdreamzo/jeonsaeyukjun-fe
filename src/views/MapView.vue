@@ -13,7 +13,7 @@
       </button>
       <button
           class="top-button"
-          :class="{ 'active-button': !isShowingPrice && !isShowingIncident }"
+          :class="{ 'active-button': isShowingSafety }"
           @click="showSafetyData"
       >
         안전도
@@ -32,6 +32,32 @@
         <img src="../assets/locationIcon.png" />
       </button>
     </div>
+
+    <!-- 검색했을 때만 뜨는 사이드바 -->
+    <transition name="slide">
+      <div v-if="isSidebarOpen" class="sidebar">
+        <button class="close-button" @click="closeSidebar">←</button>
+        <div class="sidebar-content">
+          <!-- 사이드바를 4개 영역으로 나눔 -->
+          <div class="sidebar-section section-1">
+            <h3>섹션 1</h3>
+            <p>여기에 섹션 1의 내용을 넣으세요.</p>
+          </div>
+          <div class="sidebar-section section-2">
+            <h3>섹션 2</h3>
+            <p>여기에 섹션 2의 내용을 넣으세요.</p>
+          </div>
+          <div class="sidebar-section section-3">
+            <h3>섹션 3</h3>
+            <p>여기에 섹션 3의 내용을 넣으세요.</p>
+          </div>
+          <div class="sidebar-section section-4">
+            <h3>섹션 4</h3>
+            <p>여기에 섹션 4의 내용을 넣으세요.</p>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -47,9 +73,14 @@ export default {
   setup() {
     let map;
     const markers = ref([]);
-    const isShowingPrice = ref(false);
-    const isShowingIncident = ref(false);
+    const isShowingPrice = ref(false); // 시세 상태
+    const isShowingIncident = ref(false); // 전세사기 건수 상태
+    const isShowingSafety = ref(false); // 안전도 상태
     const currentMarker = ref(null);
+
+    const isSidebarOpen = ref(false); // 사이드바 상태 (검색 후에만 열림)
+    const sidebarTitle = ref(""); // 사이드바 제목
+    const sidebarContent = ref(""); // 사이드바 내용
 
     const initMap = () => {
       const container = document.getElementById("map");
@@ -59,13 +90,26 @@ export default {
       };
       map = new kakao.maps.Map(container, options);
 
+      // 지도 이동 후 데이터 갱신
       kakao.maps.event.addListener(map, "idle", () => {
         if (isShowingPrice.value) {
           fetchPriceDataForVisibleArea();
         } else if (isShowingIncident.value) {
           fetchIncidentData();
+        } else if (isShowingSafety.value) {
+          fetchSafetyData();
         }
       });
+    };
+
+    const openSidebar = (title, content) => {
+      sidebarTitle.value = title;
+      sidebarContent.value = content;
+      isSidebarOpen.value = true; // 검색 후에만 열림
+    };
+
+    const closeSidebar = () => {
+      isSidebarOpen.value = false;
     };
 
     const getCoordinatesFromAddress = async (query) => {
@@ -112,6 +156,8 @@ export default {
         const locPosition = new kakao.maps.LatLng(lat, lng);
         map.setCenter(locPosition);
         placeMarker(lat, lng);
+        // 검색 후 사이드바 열기
+        openSidebar("검색 결과", `검색한 위치: ${query}`);
       }
     };
 
@@ -222,7 +268,7 @@ export default {
                 incidentCount > averageIncidentCount
                     ? "rgba(255, 0, 0, 0.9)"
                     : "rgb(255,127,0)";
-            const info = ` ${incidentCount}건`;
+            const info = `${incidentCount}건`;
 
             createTextOverlay(latitude, longitude, regionName, info, color);
           });
@@ -234,15 +280,33 @@ export default {
       }
     };
 
+    const fetchSafetyData = async () => {
+      try {
+        // 이 부분에 실제 안전도 데이터를 가져오는 로직을 추가하세요
+        console.log("안전도 데이터를 가져오는 중...");
+      } catch (error) {
+        console.error("안전도 정보를 불러오는 데 실패했습니다:", error);
+      }
+    };
+
     const showJeonsePrices = () => {
       isShowingPrice.value = true;
       isShowingIncident.value = false;
+      isShowingSafety.value = false;
       fetchPriceDataForVisibleArea();
+    };
+
+    const showSafetyData = () => {
+      isShowingPrice.value = false;
+      isShowingIncident.value = false;
+      isShowingSafety.value = true;
+      fetchSafetyData();
     };
 
     const showIncidentData = () => {
       isShowingPrice.value = false;
       isShowingIncident.value = true;
+      isShowingSafety.value = false;
       fetchIncidentData();
     };
 
@@ -261,9 +325,15 @@ export default {
     return {
       moveToSearchedLocation,
       showJeonsePrices,
+      showSafetyData,
       showIncidentData,
+      closeSidebar,
       isShowingPrice,
       isShowingIncident,
+      isShowingSafety,
+      isSidebarOpen,
+      sidebarTitle,
+      sidebarContent,
     };
   },
   methods: {
@@ -342,5 +412,52 @@ export default {
 
 .control-button:hover {
   background-color: #f0f0f0;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 450px;
+  height: 100%;
+  background-color: white;
+  z-index: 2000;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-content {
+  padding: 20px;
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.sidebar-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.close-button {
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  padding: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  position: absolute;
+  top: 350px;
+  right: -30px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateX(-100%);
 }
 </style>
