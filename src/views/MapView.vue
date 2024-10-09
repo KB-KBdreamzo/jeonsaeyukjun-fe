@@ -33,12 +33,10 @@
       </button>
     </div>
 
-    <!-- 검색했을 때만 뜨는 사이드바 -->
     <transition name="slide">
       <div v-if="isSidebarOpen" class="sidebar">
         <button class="close-button" @click="closeSidebar">←</button>
         <div class="sidebar-content">
-          <!-- 사이드바를 4개 영역으로 나눔 -->
           <div class="sidebar-section section-1">
             <h3>섹션 1</h3>
             <p>여기에 섹션 1의 내용을 넣으세요.</p>
@@ -73,14 +71,14 @@ export default {
   setup() {
     let map;
     const markers = ref([]);
-    const isShowingPrice = ref(false); // 시세 상태
-    const isShowingIncident = ref(false); // 전세사기 건수 상태
-    const isShowingSafety = ref(false); // 안전도 상태
+    const isShowingPrice = ref(false);
+    const isShowingIncident = ref(false);
+    const isShowingSafety = ref(false);
     const currentMarker = ref(null);
 
-    const isSidebarOpen = ref(false); // 사이드바 상태 (검색 후에만 열림)
-    const sidebarTitle = ref(""); // 사이드바 제목
-    const sidebarContent = ref(""); // 사이드바 내용
+    const isSidebarOpen = ref(false);
+    const sidebarTitle = ref("");
+    const sidebarContent = ref("");
 
     const initMap = () => {
       const container = document.getElementById("map");
@@ -90,7 +88,6 @@ export default {
       };
       map = new kakao.maps.Map(container, options);
 
-      // 지도 이동 후 데이터 갱신
       kakao.maps.event.addListener(map, "idle", () => {
         if (isShowingPrice.value) {
           fetchPriceDataForVisibleArea();
@@ -105,7 +102,7 @@ export default {
     const openSidebar = (title, content) => {
       sidebarTitle.value = title;
       sidebarContent.value = content;
-      isSidebarOpen.value = true; // 검색 후에만 열림
+      isSidebarOpen.value = true;
     };
 
     const closeSidebar = () => {
@@ -156,13 +153,40 @@ export default {
         const locPosition = new kakao.maps.LatLng(lat, lng);
         map.setCenter(locPosition);
         placeMarker(lat, lng);
-        // 검색 후 사이드바 열기
         openSidebar("검색 결과", `검색한 위치: ${query}`);
       }
     };
 
+    const removeOverlays = () => {
+      markers.value.forEach((marker) => marker.setMap(null));
+      markers.value = [];
+    };
+
+    const createTextOverlay = (latitude, longitude, address, text, color) => {
+      const content = `
+        <div class="flex items-center rounded-full shadow-lg overflow-hidden" style="opacity: 0.9;">
+          <div class="text-gray-800 font-bold py-1 px-2" style="background-color: rgba(255, 255, 255, 0.9);">
+            ${address}
+          </div>
+          <div class="text-black font-bold py-1 px-2" style="background-color: ${color};">
+            ${text}
+          </div>
+        </div>
+      `;
+      const position = new kakao.maps.LatLng(latitude, longitude);
+      const customOverlay = new kakao.maps.CustomOverlay({
+        position,
+        content,
+        yAnchor: 1.5,
+      });
+
+      customOverlay.setMap(map);
+      markers.value.push(customOverlay);
+    };
+
     const fetchPriceDataForVisibleArea = async () => {
       try {
+        removeOverlays();
         const center = map.getCenter();
         const lat = center.getLat();
         const lng = center.getLng();
@@ -190,7 +214,6 @@ export default {
 
         const priceData = priceResponse.data.dataBody?.data;
         if (Array.isArray(priceData)) {
-          removeOverlays();
           for (const item of priceData) {
             if (item.매매 && item.매매.length > 0) {
               const address = item.주소;
@@ -199,7 +222,13 @@ export default {
               if (coordinates) {
                 const { lat, lng } = coordinates;
                 const jeonsePriceInEok = (jeonsePrice / 10000).toFixed(1);
-                createTextOverlay(lat, lng, item.단지명, `매매가: ${jeonsePriceInEok}억`, "rgb(16,59,218)");
+                createTextOverlay(
+                    lat,
+                    lng,
+                    item.단지명,
+                    `매매가: ${jeonsePriceInEok}억`,
+                    "rgb(16,59,218)"
+                );
               }
             }
           }
@@ -211,35 +240,9 @@ export default {
       }
     };
 
-    const createTextOverlay = (latitude, longitude, regionName, info, color) => {
-      const content = `
-        <div class="flex items-center rounded-full shadow-lg overflow-hidden" style="opacity: 0.9;">
-          <div class="text-gray-800 font-bold py-1 px-2" style="background-color: rgba(255, 255, 255, 0.9);">
-            ${regionName}
-          </div>
-          <div class="text-white font-bold py-1 px-2" style="background-color: ${color};">
-            ${info}
-          </div>
-        </div>
-      `;
-      const position = new kakao.maps.LatLng(latitude, longitude);
-      const customOverlay = new kakao.maps.CustomOverlay({
-        position,
-        content,
-        yAnchor: 1.5,
-      });
-
-      customOverlay.setMap(map);
-      markers.value.push(customOverlay);
-    };
-
-    const removeOverlays = () => {
-      markers.value.forEach((marker) => marker.setMap(null));
-      markers.value = [];
-    };
-
     const fetchIncidentData = async () => {
       try {
+        removeOverlays();
         const center = map.getCenter();
         const lat = center.getLat();
         const lng = center.getLng();
@@ -251,8 +254,6 @@ export default {
         const incidentData = response.data;
 
         if (Array.isArray(incidentData)) {
-          removeOverlays();
-
           const totalIncidentCount = incidentData.reduce(
               (sum, item) => sum + item.incidentCount,
               0
@@ -282,10 +283,62 @@ export default {
 
     const fetchSafetyData = async () => {
       try {
-        // 이 부분에 실제 안전도 데이터를 가져오는 로직을 추가하세요
-        console.log("안전도 데이터를 가져오는 중...");
+        removeOverlays();
+        const center = map.getCenter();
+        const lat = center.getLat();
+        const lng = center.getLng();
+
+        const regionResponse = await axios.get(
+            "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
+            {
+              params: { x: lng, y: lat },
+              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
+            }
+        );
+
+        if (!regionResponse.data.documents || regionResponse.data.documents.length === 0) {
+          console.error("법정동코드가 없습니다.");
+          return;
+        }
+
+        const lawCode = regionResponse.data.documents[0].code;
+        const address = regionResponse.data.documents[0].address_name;
+
+        const safetyResponse = await axios.get(
+            "http://localhost:8080/api/safety-data",
+            {
+              params: { 법정동코드: lawCode },
+            }
+        );
+
+        if (safetyResponse.data.length > 0) {
+          const safetyData = safetyResponse.data[0];
+          const safetyScore = safetyData.safetyScore || 0;
+
+          const { text, color } = categorizeSafetyScore(safetyScore);
+          createTextOverlay(lat, lng, address, text, color);
+        } else {
+          createTextOverlay(lat, lng, address, "자료가 없습니다", "rgb(128, 128, 128)");
+        }
       } catch (error) {
-        console.error("안전도 정보를 불러오는 데 실패했습니다:", error);
+        console.error("안전도 데이터를 불러오는 데 실패했습니다:", error.response?.data || error.message);
+        createTextOverlay(center.getLat(), center.getLng(), "현재 위치", "자료가 없습니다", "rgb(128, 128, 128)");
+      }
+    };
+
+    const categorizeSafetyScore = (score) => {
+      if (score >= 0 && score <= 20) {
+        return { text: "위험", color: "rgb(255, 99, 71)" };
+      } else if (score > 20 && score <= 40) {
+        return { text: "주의", color: "rgb(255, 165, 0)" };
+      } else if (score > 40 && score <= 60) {
+        return { text: "보통", color: "rgb(255, 255, 102)" };
+      } else if (score > 60 && score <= 80) {
+        return { text: "양호", color: "rgb(144, 238, 144)" };
+      } else if (score > 80 && score <= 100) {
+        return { text: "안전", color: "rgb(173, 216, 230)" };
+      } else {
+        return { text: "데이터 없음", color: "rgb(128, 128, 128)" };
       }
     };
 
@@ -335,11 +388,6 @@ export default {
       sidebarTitle,
       sidebarContent,
     };
-  },
-  methods: {
-    async handleSearch(searchQuery) {
-      await this.moveToSearchedLocation(searchQuery);
-    },
   },
 };
 </script>
