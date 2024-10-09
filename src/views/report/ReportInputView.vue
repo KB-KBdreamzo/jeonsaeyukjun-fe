@@ -202,14 +202,23 @@ const checkValidation = () => {
 
 const addReport = async () => {
   if (canAddReport.value) {
-    await reportStore.addReport({
-      deposit: deposit.value,
-      detailedAddress: detailedAddress,
-      jbAddress: addressStore.selectedAddress.jibunAddr,
-      legalCode: addressStore.selectedAddress.admCd, 
-      registerDto: registerStore.registerData,
-    });
-    router.push('/report/result')
+    console.log("리포트 생성 및 저장")
+    isReportLoading.value = true;
+    try {
+        await reportStore.addReport({
+        deposit: deposit.value,
+        detailedAddress: detailedAddress.value,
+        jbAddress: addressStore.selectedAddress.jibunAddr,
+        legalCode: addressStore.selectedAddress.admCd, 
+        registerDto: registerStore.registerData,
+      });
+    } catch (error) {
+      console.error("리포트 저장 및 조회 실패", error);
+    } finally {
+      isFileLoading.value = false; // 로딩 완료
+      console.log("리포트 완료 라우터 넘어갈거임")
+      router.push('/report/result')
+    }
   }
 };
 </script>
