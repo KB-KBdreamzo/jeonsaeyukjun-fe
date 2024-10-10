@@ -81,28 +81,26 @@
         // 날짜 업데이트 함수
         const updateLeaseStartDate = (date: string) => {
             leaseStartDate.value = date;
-            emit('update-lease-dates', leaseStartDate.value, leaseEndDate.value); // 부모에게 업데이트
+            emit('update-lease-dates', {type: 'leaseStartDate', value: leaseStartDate.value}); // 부모에게 업데이트
         };
 
         const updateLeaseEndDate = (date: string) => {
             leaseEndDate.value = date;
-            emit('update-lease-dates', leaseStartDate.value, leaseEndDate.value); // 부모에게 업데이트
+            emit('update-lease-dates', {type: 'leaseEndDate', value: leaseEndDate.value}); // 부모에게 업데이트
         };
 
         const updateAdditionalInfo = (type: string, event: Event) => {
             const value = (event.target as HTMLInputElement).value;
             if (type === 'deposit') {
                 depositAmount.value = value;
+                emit('update-deposit', depositAmount.value); // 'update-deposit' 이벤트로 개별 전달
             } else if (type === 'unpaid') {
                 unpaidNationalAndLocalTax.value = value;
+                emit('update-unpaid', unpaidNationalAndLocalTax.value); // 'update-unpaid' 이벤트로 개별 전달
             } else if (type === 'priority') {
                 priorityConfirmedDateDetails.value = value;
+                emit('update-priority', priorityConfirmedDateDetails.value); // 'update-priority' 이벤트로 개별 전달
             }
-            emit('update-lease-dates', {
-                deposit: depositAmount.value,
-                unpaid: unpaidNationalAndLocalTax.value,
-                priority: priorityConfirmedDateDetails.value
-            })
         }
 
         return {

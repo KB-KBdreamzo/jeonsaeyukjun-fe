@@ -13,7 +13,7 @@ import IconSideBar from './components/IconSideBar.vue';
 
     <div class="main-content">
       <!-- 페이지 내용은 여기서 로드됨 -->
-      전체 내용      
+           
       <router-view />
     </div>
   </div>
