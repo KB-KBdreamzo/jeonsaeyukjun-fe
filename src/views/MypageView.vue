@@ -1,6 +1,5 @@
 <template>
   <div class="container mx-auto p-8 pt-12">
-    <!-- 프로필 섹션 -->
     <div
       class="bg-gray-100 rounded-lg p-8 flex justify-between items-center mb-16"
     >
@@ -21,9 +20,7 @@
       </div>
     </div>
 
-    <!-- 리포트 및 계약서 섹션을 좌우로 배치 -->
     <div class="flex justify-between space-x-16 mx-2">
-      <!-- 리포트 조회 섹션 -->
       <div class="w-1/2">
         <div class="mb-4">
           <div class="flex justify-between items-center mb-6">
@@ -42,7 +39,7 @@
               :key="index"
               class="flex justify-between items-center bg-white border-b py-4 border-gray-200"
             >
-              <span>{{ report.address }}</span>
+              <span>{{ report.roadName + report.detailAddress }}</span>
               <span
                 class="px-4 py-1 rounded-full text-white ml-auto"
                 :class="getStatusClass(report.status)"
@@ -54,7 +51,6 @@
         </div>
       </div>
 
-      <!-- 계약서 조회 섹션 -->
       <div class="w-1/2">
         <div class="mb-4">
           <div class="flex justify-between items-center mb-6">
@@ -88,16 +84,13 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "MypageView",
   data() {
     return {
-      reportList: [
-        { address: "강서구 방화대로47가길 22", status: "위험" },
-        { address: "강서구 양천로26길 24-10", status: "양호" },
-        { address: "강서구 방화대로 351", status: "보통" },
-        { address: "강서구 등촌로39마길 4", status: "안전" },
-      ],
+      reportList: [],
       contractList: [
         { address: "강서구 방화대로47가길 22" },
         { address: "강서구 양천로26길 24-10" },
@@ -112,6 +105,30 @@ export default {
       if (status === "위험" || status === "주의") return "bg-red-400"; // 위험, 주의 - 빨간색
       return "bg-gray-300"; // 상태가 없는 경우 기본 색상 (회색)
     },
+    calculateStatus(safetyScore) {
+      if (safetyScore > 80) return "안전";
+      if (safetyScore > 60) return "양호";
+      if (safetyScore > 40) return "보통";
+      if (safetyScore > 20) return "위험";
+      return "주의";
+    },
+    async fetchReports(userId) {
+      try {
+        const reportResponse = await axios.get(
+          `http://localhost:8080/api/mypage/reports/${userId}?limit=4`
+        );
+        this.reportList = reportResponse.data.map((report) => ({
+          ...report, // 기존 report 필드 복사
+          status: this.calculateStatus(report.safetyScore), // safetyScore를 기반으로 status 계산
+        }));
+        console.log("reportList", this.reportList);
+      } catch (error) {
+        console.error("데이터를 불러오는 중 오류 발생:", error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchReports("2");
   },
 };
 </script>

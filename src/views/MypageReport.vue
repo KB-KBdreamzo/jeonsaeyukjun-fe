@@ -6,6 +6,7 @@
       <div class="flex items-center space-x-4">
         <input
           v-model="searchQuery"
+          @input="onSearch"
           type="text"
           placeholder="주소를 검색하세요"
           class="w-80 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-gray-500"
@@ -37,7 +38,7 @@
             class="absolute mt-1 right-0 w-full bg-white border border-gray-300 rounded-lg z-10"
           >
             <button
-              @click="sortBy('latest')"
+              @click="sortBy('lastest')"
               class="block w-full text-left px-4 py-2 hover:bg-gray-100"
             >
               최신순
@@ -55,24 +56,23 @@
 
     <!-- 테이블 섹션 -->
     <div class="min-h-[400px]">
-      <!-- 테이블 섹션을 감싸는 div에 최소 높이 설정 -->
       <table class="w-full bg-white rounded-lg table-fixed">
         <thead class="bg-gray-100">
           <tr>
-            <th class="p-4 text-left" style="width: 30%">주소지</th>
-            <th class="p-4 text-left" style="width: 25%">전세금</th>
-            <th class="p-4 text-left" style="width: 21%">안전 진단</th>
+            <th class="p-4 text-left" style="width: 40%">주소지</th>
+            <th class="p-4 text-left" style="width: 23%">전세금</th>
+            <th class="p-4 text-left" style="width: 20%">안전 진단</th>
             <th class="p-4 text-left" style="width: 25%">생성일</th>
             <th class="p-4 text-left w-40">조회 및 삭제</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="(report, index) in paginatedReports"
+            v-for="(report, index) in reportList"
             :key="index"
             class="border-b hover:bg-gray-50"
           >
-            <td class="p-4">{{ report.address }}</td>
+            <td class="p-4">{{ report.roadName + report.detailAddress }}</td>
             <td class="p-4">{{ formatPrice(report.deposit) }}</td>
             <td class="p-4">
               <span
@@ -82,7 +82,7 @@
                 {{ report.status }}
               </span>
             </td>
-            <td class="p-4">{{ report.createdAt }}</td>
+            <td class="p-4">{{ report.createAt }}</td>
             <td class="p-4 flex space-x-2 justify-end">
               <button
                 @click="viewReport(report)"
@@ -104,7 +104,6 @@
 
     <!-- 페이지네이션 섹션 -->
     <div class="flex justify-end space-x-2 mt-6">
-      <!-- 페이지 섹션에 최소 높이 설정 -->
       <button
         @click="goToPage(page)"
         v-for="page in totalPages"
@@ -124,125 +123,39 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "MypageReport",
   data() {
     return {
       searchQuery: "", // 검색어
       isSortDropdownOpen: false, // 정렬 드롭다운 메뉴의 상태
-      sortKey: "latest", // 현재 정렬 키
+      sortKey: "lastest", // 현재 정렬 키
       currentPage: 1, // 현재 페이지
       perPage: 5, // 페이지당 항목 수
-      reports: [
-        // 기존의 데이터 목록
-        {
-          address: "강서구 방화대로47가길 22",
-          deposit: 420000000,
-          status: "양호",
-          createdAt: "2024.09.11 11:00",
-        },
-        {
-          address: "강서구 양천로26길 24-10",
-          deposit: 280000000,
-          status: "위험",
-          createdAt: "2024.09.11 15:00",
-        },
-        {
-          address: "강서구 방화대로 351",
-          deposit: 370000000,
-          status: "주의",
-          createdAt: "2024.09.12 18:00",
-        },
-        {
-          address: "강서구 등촌로39마길 4",
-          deposit: 210000000,
-          status: "보통",
-          createdAt: "2024.09.13 8:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          status: "양호",
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "강서구 방화대로47가길 22",
-          deposit: 420000000,
-          status: "양호",
-          createdAt: "2024.09.11 11:00",
-        },
-        {
-          address: "강서구 양천로26길 24-10",
-          deposit: 280000000,
-          status: "위험",
-          createdAt: "2024.09.11 15:00",
-        },
-        {
-          address: "강서구 방화대로 351",
-          deposit: 370000000,
-          status: "주의",
-          createdAt: "2024.09.12 18:00",
-        },
-        {
-          address: "강서구 등촌로39마길 4",
-          deposit: 210000000,
-          status: "보통",
-          createdAt: "2024.09.13 8:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          status: "양호",
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "강서구 방화대로47가길 22",
-          deposit: 420000000,
-          status: "양호",
-          createdAt: "2024.09.11 11:00",
-        },
-        {
-          address: "강서구 양천로26길 24-10",
-          deposit: 280000000,
-          status: "위험",
-          createdAt: "2024.09.11 15:00",
-        },
-        {
-          address: "강서구 방화대로 351",
-          deposit: 370000000,
-          status: "주의",
-          createdAt: "2024.09.12 18:00",
-        },
-        {
-          address: "강서구 등촌로39마길 4",
-          deposit: 210000000,
-          status: "보통",
-          createdAt: "2024.09.13 8:00",
-        },
-      ],
+      reportList: [], // 서버에서 받은 리포트 목록
+      totalPages: 1, // 전체 페이지 수
     };
   },
   computed: {
     filteredReports() {
-      let filtered = this.reports.filter((report) =>
-        report.address.includes(this.searchQuery)
+      let filtered = this.reportList.filter(
+        (report) =>
+          report.roadName.includes(this.searchQuery) ||
+          report.detailAddress.includes(this.searchQuery)
       );
-      return this.sortKey === "latest"
-        ? filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        : filtered.sort(
-            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-          );
+      return this.sortKey === "lastest"
+        ? filtered.sort((a, b) => new Date(b.createAt) - new Date(a.createAt))
+        : filtered.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
     },
     paginatedReports() {
       const start = (this.currentPage - 1) * this.perPage;
       const end = this.currentPage * this.perPage;
       return this.filteredReports.slice(start, end);
     },
-    totalPages() {
-      return Math.ceil(this.filteredReports.length / this.perPage);
-    },
     sortButtonText() {
-      return this.sortKey === "latest" ? "최신순" : "오래된순";
+      return this.sortKey === "lastest" ? "최신순" : "오래된순";
     },
   },
   methods: {
@@ -252,9 +165,17 @@ export default {
     sortBy(key) {
       this.sortKey = key;
       this.isSortDropdownOpen = false;
+      this.currentPage = 1; // 첫 페이지부터 다시 검색
+      this.fetchReports("2");
     },
     goToPage(page) {
       this.currentPage = page;
+      this.fetchReports("2");
+    },
+    onSearch() {
+      console.log("onSearch", this.searchQuery);
+      this.currentPage = 1; // 검색어 변경 시 첫 페이지부터 다시 검색
+      this.fetchReports("2");
     },
     formatPrice(value) {
       return value.toLocaleString();
@@ -265,6 +186,54 @@ export default {
       if (status === "위험" || status === "주의") return "bg-red-400";
       return "bg-gray-300";
     },
+    calculateStatus(safetyScore) {
+      if (safetyScore > 80) return "안전";
+      if (safetyScore > 60) return "양호";
+      if (safetyScore > 40) return "보통";
+      if (safetyScore > 20) return "위험";
+      return "주의";
+    },
+    async fetchReports(userId, searchQuery) {
+      try {
+        const reportResponse = await axios.get(
+          `http://localhost:8080/api/mypage/reports/paged/${userId}`,
+          {
+            params: {
+              page: this.currentPage,
+              size: this.perPage,
+              sortKey: this.sortKey,
+              query: this.searchQuery,
+            },
+          }
+        );
+        this.reportList = reportResponse.data.reports.map((report) => ({
+          ...report,
+          status: this.calculateStatus(report.safetyScore),
+        }));
+        this.totalPages = reportResponse.data.totalPages; // 전체 페이지 수 설정
+      } catch (error) {
+        console.error("데이터를 불러오는 중 오류 발생:", error);
+      }
+    },
+    async deleteReport(index) {
+      const reportId = this.reportList[index]?.reportId;
+      if (!reportId) {
+        alert("삭제할 리포트 ID가 존재하지 않습니다.");
+        return;
+      }
+
+      try {
+        await axios.delete(`http://localhost:8088/api/report/${reportId}`);
+        this.fetchReports("2");
+        alert("리포트가 삭제되었습니다.");
+      } catch (error) {
+        console.error("삭제 중 오류 발생:", error);
+        alert("삭제에 실패했습니다. 다시 시도해주세요.");
+      }
+    },
+  },
+  mounted() {
+    this.fetchReports("2");
   },
 };
 </script>
