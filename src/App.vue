@@ -1,85 +1,70 @@
 <template>
-    <div class="sidebar">
-      <!-- 사이드바 메뉴 -->
-      <IconSideBar />
-    </div>
+  <div id="app">
+    <header
+        class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
+    >
+      <div class="flex items-center ml-20">
+        <img
+            src="@/assets/logo.png"
+            alt="전세역전 로고"
+            class="w-12 h-12 mr-2"
+        />
+        <span class="text-xl font-normal">전세역전</span>
+      </div>
+      <nav class="mr-20">
+        <ul class="flex space-x-20">
+          <li>
+            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">리포트</a>
+          </li>
+          <li>
+            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">지도</a>
+          </li>
+          <li>
+            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">계약서</a>
+          </li>
+          <li>
+            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">Login</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-    <div class="main-content">
-      <!-- 페이지 내용은 여기서 로드됨 -->
-      <RouterView />
+    <div class="main-content pt-16">
+      <router-view />
     </div>
+  </div>
 </template>
 
-<script setup>
-import { RouterLink, RouterView } from 'vue-router';
-import IconSideBar from './components/IconSideBar.vue';
-import SearchBar from './components/SearchBar.vue';  // 검색창 컴포넌트 추가
-</script>
-
 <style>
-.sidebar {
-  width: 3rem;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  background-color: #f0f0f0;
-  z-index: 1000;
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .main-content {
-  margin-left: 3rem;
-  width: calc(100vw - 3rem);
-  height: 100vh;
-  padding: 0;
-  position: relative;
-  background-color: #fff;
+  flex-grow: 1;
+  overflow: hidden;
+  padding-top: 65px;
 }
 
-.search-bar {
-  position: absolute;
-  top: 20px;
-  left: 3.5rem; /* 검색창을 사이드바에서 3.5rem 떨어지도록 설정 */
-  z-index: 1001;
-  background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+#map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 #map {
   width: 100%;
   height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
-.sidebar .logo {
-  display: block;
-  margin-bottom: 20px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 10px 0;
-}
-
-.sidebar ul li a {
-  text-decoration: none;
-  color: #333;
-}
-
-.main-content {
-  display: flex;  
-  flex-direction: column;
-  row-gap: 50px;
-  align-items: center;
-  background-color: #fff;
-  overflow-y: auto;
-}
 </style>

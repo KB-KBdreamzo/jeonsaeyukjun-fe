@@ -3,16 +3,42 @@
     <SearchBar @search="handleSearch" />
     <div id="map"></div>
 
+    <div class="top-right-buttons">
+      <button
+          class="top-button"
+          :class="{ 'active-button': isShowingPrice }"
+          @click="showJeonsePrices"
+      >
+        시세
+      </button>
+      <button
+          class="top-button"
+          :class="{ 'active-button': !isShowingPrice && !isShowingIncident }"
+          @click="showSafetyData"
+      >
+        안전도
+      </button>
+      <button
+          class="top-button"
+          :class="{ 'active-button': isShowingIncident }"
+          @click="showIncidentData"
+      >
+        전세사기 건수
+      </button>
+    </div>
+
     <div class="map-controls">
-      <button @click="moveToCurrentLocation" class="control-button"><img src="../assets/locationIcon.png"></button>
+      <button @click="moveToCurrentLocation" class="control-button">
+        <img src="../assets/locationIcon.png" />
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
-import SearchBar from '@/components/SearchBar.vue';
-import axios from 'axios';
+import { onMounted, ref } from "vue";
+import SearchBar from "@/components/SearchBar.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -21,62 +47,139 @@ export default {
   setup() {
     let map;
     const markers = ref([]);
-    const incidentData = ref([]);
+    const isShowingPrice = ref(false);
+    const isShowingIncident = ref(false);
+    const currentMarker = ref(null);
 
     const initMap = () => {
-      const container = document.getElementById('map');
-
+      const container = document.getElementById("map");
       const options = {
         center: new kakao.maps.LatLng(37.550964, 126.849533),
         level: 3,
       };
       map = new kakao.maps.Map(container, options);
 
-      var mapTypeControl = new kakao.maps.MapTypeControl();
-      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-
-      var zoomControl = new kakao.maps.ZoomControl();
-      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      kakao.maps.event.addListener(map, "idle", () => {
+        if (isShowingPrice.value) {
+          fetchPriceDataForVisibleArea();
+        } else if (isShowingIncident.value) {
+          fetchIncidentData();
+        }
+      });
     };
 
-    const fetchIncidentData = async () => {
+    const getCoordinatesFromAddress = async (query) => {
       try {
-        const response = await axios.get('http://localhost:8080/api/incidents');
-        incidentData.value = response.data;
+        const apiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
+        const response = await axios.get(
+            "https://dapi.kakao.com/v2/local/search/address.json",
+            {
+              params: { query },
+              headers: { Authorization: `KakaoAK ${apiKey}` },
+            }
+        );
 
-        const totalIncidents = incidentData.value.reduce((acc, item) => acc + item.incidentCount, 0);
-        const avgIncidentCount = totalIncidents / incidentData.value.length;
-
-        incidentData.value.forEach(item => {
-          if (item.latitude !== 0 && item.longitude !== 0) {
-            createTextOverlay(item.latitude, item.longitude, item.regionName, item.incidentCount, avgIncidentCount);
-          }
-        });
+        if (response.data.documents.length > 0) {
+          const { x, y } = response.data.documents[0];
+          return { lat: parseFloat(y), lng: parseFloat(x) };
+        } else {
+          console.error("주소로 좌표를 찾을 수 없습니다.");
+        }
       } catch (error) {
-        console.error("데이터를 불러오는데 실패했습니다:", error);
+        console.error("주소를 좌표로 변환하는 데 실패했습니다:", error);
+      }
+      return null;
+    };
+
+    const placeMarker = (lat, lng) => {
+      if (currentMarker.value) {
+        currentMarker.value.setMap(null);
+      }
+
+      const position = new kakao.maps.LatLng(lat, lng);
+      const marker = new kakao.maps.Marker({
+        position,
+      });
+
+      marker.setMap(map);
+      currentMarker.value = marker;
+    };
+
+    const moveToSearchedLocation = async (query) => {
+      const coordinates = await getCoordinatesFromAddress(query);
+      if (coordinates) {
+        const { lat, lng } = coordinates;
+        const locPosition = new kakao.maps.LatLng(lat, lng);
+        map.setCenter(locPosition);
+        placeMarker(lat, lng);
       }
     };
 
-    const createTextOverlay = (latitude, longitude, regionName, incidentCount, avgIncidentCount) => {
-      // 평균보다 많으면 진한 빨간색, 적으면 옅은 빨간색
-      const backgroundColor = incidentCount > avgIncidentCount ? 'rgb(219,22,0)' : 'rgba(255, 99, 71, 0.7)';
+    const fetchPriceDataForVisibleArea = async () => {
+      try {
+        const center = map.getCenter();
+        const lat = center.getLat();
+        const lng = center.getLng();
 
+        const regionResponse = await axios.get(
+            "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
+            {
+              params: { x: lng, y: lat },
+              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
+            }
+        );
+
+        if (!regionResponse.data.documents || regionResponse.data.documents.length === 0) {
+          console.error("법정동코드가 없습니다.");
+          return;
+        }
+
+        const lawCode = regionResponse.data.documents[0].code;
+        const priceResponse = await axios.get(
+            "https://api.kbland.kr/land-price/price/fastPriceInfo",
+            {
+              params: { 법정동코드: lawCode, 유형: 2, 거래유형: 0 },
+            }
+        );
+
+        const priceData = priceResponse.data.dataBody?.data;
+        if (Array.isArray(priceData)) {
+          removeOverlays();
+          for (const item of priceData) {
+            if (item.매매 && item.매매.length > 0) {
+              const address = item.주소;
+              const jeonsePrice = item.매매[0].일반평균;
+              const coordinates = await getCoordinatesFromAddress(address);
+              if (coordinates) {
+                const { lat, lng } = coordinates;
+                const jeonsePriceInEok = (jeonsePrice / 10000).toFixed(1);
+                createTextOverlay(lat, lng, item.단지명, `매매가: ${jeonsePriceInEok}억`, "rgb(16,59,218)");
+              }
+            }
+          }
+        } else {
+          console.error("priceData는 배열이어야 합니다.", priceData);
+        }
+      } catch (error) {
+        console.error("시세 정보를 불러오는 데 실패했습니다:", error.response?.data || error.message);
+      }
+    };
+
+    const createTextOverlay = (latitude, longitude, regionName, info, color) => {
       const content = `
         <div class="flex items-center rounded-full shadow-lg overflow-hidden" style="opacity: 0.9;">
           <div class="text-gray-800 font-bold py-1 px-2" style="background-color: rgba(255, 255, 255, 0.9);">
             ${regionName}
           </div>
-          <div class="text-white font-bold py-1 px-2" style="background-color: ${backgroundColor};">
-            ${incidentCount}건
+          <div class="text-white font-bold py-1 px-2" style="background-color: ${color};">
+            ${info}
           </div>
         </div>
       `;
-
       const position = new kakao.maps.LatLng(latitude, longitude);
-
       const customOverlay = new kakao.maps.CustomOverlay({
-        position: position,
-        content: content,
+        position,
+        content,
         yAnchor: 1.5,
       });
 
@@ -84,38 +187,88 @@ export default {
       markers.value.push(customOverlay);
     };
 
+    const removeOverlays = () => {
+      markers.value.forEach((marker) => marker.setMap(null));
+      markers.value = [];
+    };
+
+    const fetchIncidentData = async () => {
+      try {
+        const center = map.getCenter();
+        const lat = center.getLat();
+        const lng = center.getLng();
+
+        const response = await axios.get("http://localhost:8080/api/incidents", {
+          params: { x: lng, y: lat },
+        });
+
+        const incidentData = response.data;
+
+        if (Array.isArray(incidentData)) {
+          removeOverlays();
+
+          const totalIncidentCount = incidentData.reduce(
+              (sum, item) => sum + item.incidentCount,
+              0
+          );
+          const averageIncidentCount = totalIncidentCount / incidentData.length;
+
+          incidentData.forEach((item) => {
+            const latitude = item.latitude;
+            const longitude = item.longitude;
+            const regionName = item.regionName || "Unknown";
+            const incidentCount = item.incidentCount;
+            const color =
+                incidentCount > averageIncidentCount
+                    ? "rgba(255, 0, 0, 0.9)"
+                    : "rgb(255,127,0)";
+            const info = ` ${incidentCount}건`;
+
+            createTextOverlay(latitude, longitude, regionName, info, color);
+          });
+        } else {
+          console.error("incidentData는 배열이어야 합니다.", incidentData);
+        }
+      } catch (error) {
+        console.error("Incident 정보를 가져오는 데 실패했습니다:", error.response?.data || error.message);
+      }
+    };
+
+    const showJeonsePrices = () => {
+      isShowingPrice.value = true;
+      isShowingIncident.value = false;
+      fetchPriceDataForVisibleArea();
+    };
+
+    const showIncidentData = () => {
+      isShowingPrice.value = false;
+      isShowingIncident.value = true;
+      fetchIncidentData();
+    };
+
     onMounted(() => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       const apikey = import.meta.env.VITE_KAKAO_MAP_API_KEY;
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apikey}&autoload=false`;
       script.onload = () => {
         kakao.maps.load(() => {
           initMap();
-          fetchIncidentData();
         });
       };
       document.head.appendChild(script);
     });
 
     return {
-      markers,
-      moveToCurrentLocation() {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(position => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const locPosition = new kakao.maps.LatLng(lat, lon);
-            map.setCenter(locPosition);
-          });
-        } else {
-          alert("현재 위치를 찾을 수 없습니다.");
-        }
-      },
+      moveToSearchedLocation,
+      showJeonsePrices,
+      showIncidentData,
+      isShowingPrice,
+      isShowingIncident,
     };
   },
   methods: {
-    handleSearch(searchQuery) {
-      console.log("입력된 검색어:", searchQuery);
+    async handleSearch(searchQuery) {
+      await this.moveToSearchedLocation(searchQuery);
     },
   },
 };
@@ -132,12 +285,42 @@ export default {
 #map {
   width: 100%;
   height: 100%;
-  min-height: 400px;
+}
+
+.top-right-buttons {
+  position: absolute;
+  top: 44px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.top-button {
+  background-color: #ffffff;
+  padding: 7px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #0a0a0a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.top-button:hover {
+  background-color: #1d4ed8;
+}
+
+.top-button.active-button {
+  background-color: #1d4ed8;
+  color: #ffffff;
 }
 
 .map-controls {
   position: absolute;
-  bottom: 20px;
+  bottom: 70px;
   right: 20px;
   display: flex;
   flex-direction: column;
