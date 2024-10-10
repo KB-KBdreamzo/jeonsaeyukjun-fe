@@ -1,7 +1,7 @@
 <template>
     <div class="p-6">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold">우리 동네 공인중개사 탐색</h1>
+        <h1 class="text-2xl font-bold">우리 동네 공인중개사 찾기</h1>
         <div class="flex space-x-4">
           <!-- 시 드롭다운 -->
           <Menu as="div" class="relative text-left">
@@ -62,6 +62,9 @@
               </MenuItems>
             </transition>
           </Menu>
+          <button @click="fetchAgents" class="w-12 flex items-center bg-black rounded-md px-3 py-1">
+            <img src="/src/assets/searchIconWhite.png" alt="Search" class="h-6 w-6" />
+          </button>
         </div>
       </div>
       {{ selectedSido}} {{ selectedSigugun  }} {{selectedDong}}
@@ -83,6 +86,7 @@
   
   <script setup>
   import { ref } from 'vue';
+  import axios from 'axios';
   import { hangjungdong } from '@/assets/hangjungdong.js'; // JSON 파일 경로
   import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
   import { ChevronDownIcon } from '@heroicons/vue/20/solid';
@@ -97,6 +101,7 @@
   const isSidoDropdownOpen = ref(false);
   const isSigugunDropdownOpen = ref(false);
   const isDongDropdownOpen = ref(false);
+  const agents = ref([]);
 
   const selectSido = (code) => {
     selectedSido.value = code;
@@ -131,30 +136,20 @@
       dong.sido === selectedSido.value.sido && dong.sigugun === selectedSigugun.value.sigugun
     );
   };
-  
-  // 초기 에이전트 리스트
-  const agents = ref([
-    {
-      bzmn_conm: "미소지움공인중개사사무소",
-      addr: "서울특별시 동대문구 서울시립대로 75 101동 103호",
-      telno: "02-2215-4945",
-    },
-    {
-      bzmn_conm: "행운공인중개사사무소",
-      addr: "서울특별시 동대문구 답십리로56길 21",
-      telno: "02-2241-9977",
-    },
-    {
-      bzmn_conm: "부자부동산공인중개사사무소",
-      addr: "서울특별시 동대문구 약령중앙로6길 15 1층(제기동)",
-      telno: "02-965-5035",
-    },
-    {
-      bzmn_conm: "한신부동산공인중개사사무소",
-      addr: "서울특별시 동대문구 제기로 131",
-      telno: "02-968-8080",
-    },
-  ]);
+
+  const fetchAgents = async () => {
+    // 행정동 코드 조합
+    const legalCode = 1120011200;
+    
+    try {
+      const response = await axios.get(`http://localhost:8088/api/agent/${legalCode}`);
+      console.log(response.data);
+      agents.value = response.data; 
+    } catch (error) {
+      console.error('에이전트 조회 중 오류 발생:', error);
+    }
+  };
+
   </script>
   
   <style scoped>
