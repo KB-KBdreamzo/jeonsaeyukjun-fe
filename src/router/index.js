@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '@/views/HomeView.vue'
 import ReportPage from "@/views/ReportView.vue";
 import MapView from "@/views/MapView.vue";
+import AgentView from '@/views/Agent/AgentView.vue';
+import BookingConfirmView from '@/views/Agent/BookingConfirmView.vue';
 
 
 const router = createRouter({
@@ -10,7 +12,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: MapView
+      component: HomeView,
+    },
+    {
+      path: '/agent',
+      name: 'AgentPage',
+      component: AgentView,
+    },
+    {
+      path: '/booking-confirm',
+      name: 'BookingConfirmPage',
+      component: BookingConfirmView,
     },
     {
       path: '/report',
