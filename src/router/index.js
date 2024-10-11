@@ -7,6 +7,7 @@ import MapView from "@/views/MapView.vue";
 import MypageView from "@/views/mypage/MypageView.vue";
 import MypageReportView from "@/views/mypage/MypageReportView.vue";
 import MypageContractView from "@/views/mypage/MypageContractView.vue";
+import BookingConfirmView from '@/views/Agent/BookingConfirmView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,10 @@ const router = createRouter({
       path: "/map",
       name: "map",
       component: MapView,
+    {
+      path: '/booking-confirm',
+      name: 'BookingConfirmPage',
+      component: BookingConfirmView,
     },
     {
       path: "/report/input",

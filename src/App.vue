@@ -17,7 +17,7 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
         />
         <span class="text-xl font-normal">전세역전</span>
       </div>
-      <nav class="mr-20">
+      <nav class="mr-40">
         <ul class="flex space-x-20">
           <li>
             <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">리포트</a>
@@ -27,6 +27,9 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
           </li>
           <li>
             <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">계약서</a>
+          </li>
+          <li>
+            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">예약</a>
           </li>
           <li>
             <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">Login</a>
