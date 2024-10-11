@@ -83,58 +83,51 @@
   </div>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios';
 
-export default {
-  name: "MypageView",
-  data() {
-    return {
-      reportList: [],
-      contractList: [
-        { address: "강서구 방화대로47가길 22" },
-        { address: "강서구 양천로26길 24-10" },
-        { address: "강서구 방화대로 351" },
-      ],
-    };
-  },
-  methods: {
-    getStatusClass(status) {
-      if (status === "안전") return "bg-green-400"; // 안전 - 연두색
-      if (status === "양호" || status === "보통") return "bg-yellow-300"; // 양호, 보통 - 노란색
-      if (status === "위험" || status === "주의") return "bg-red-400"; // 위험, 주의 - 빨간색
-      return "bg-gray-300"; // 상태가 없는 경우 기본 색상 (회색)
-    },
-    calculateStatus(safetyScore) {
-      if (safetyScore > 80) return "안전";
-      if (safetyScore > 60) return "양호";
-      if (safetyScore > 40) return "보통";
-      if (safetyScore > 20) return "위험";
-      return "주의";
-    },
-    async fetchReports(userId) {
-      try {
-        const reportResponse = await axios.get(
-          `http://localhost:8080/api/mypage/reports/${userId}?limit=4`
-        );
-        this.reportList = reportResponse.data.map((report) => ({
-          ...report, // 기존 report 필드 복사
-          status: this.calculateStatus(report.safetyScore), // safetyScore를 기반으로 status 계산
-        }));
-        console.log("reportList", this.reportList);
-      } catch (error) {
-        console.error("데이터를 불러오는 중 오류 발생:", error);
-      }
-    },
-  },
-  mounted() {
-    this.fetchReports("2");
-  },
+const reportList = ref([]);
+const contractList = ref([
+  { address: "강서구 방화대로47가길 22" },
+  { address: "강서구 양천로26길 24-10" },
+  { address: "강서구 방화대로 351" },
+]);
+
+const getStatusClass = (status) => {
+  if (status === "안전") return "bg-green-400"; 
+  if (status === "양호" || status === "보통") return "bg-yellow-300"; 
+  if (status === "위험" || status === "주의") return "bg-red-400"; 
+  return "bg-gray-300"; 
 };
+
+const calculateStatus = (safetyScore) => {
+  if (safetyScore > 80) return "안전";
+  if (safetyScore > 60) return "양호";
+  if (safetyScore > 40) return "보통";
+  if (safetyScore > 20) return "위험";
+  return "주의";
+};
+
+const fetchReports = async (userId) => {
+  try {
+    const reportResponse = await axios.get(
+      `http://localhost:8080/api/report/${userId}?sortKey=latest&page=1&size=4`
+    );
+    reportList.value = reportResponse.data.reports.map((report) => ({
+      ...report, 
+      status: calculateStatus(report.safetyScore), 
+    }));
+  } catch (error) {
+    console.error("데이터를 불러오는 중 오류 발생:", error);
+  }
+};
+
+fetchReports("1");
 </script>
 
 <style scoped>
 .container {
-  width: 80%; /* 전체 컨테이너의 너비를 80%로 설정 */
+  width: 80%; 
 }
 </style>

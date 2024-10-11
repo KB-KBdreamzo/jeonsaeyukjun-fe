@@ -1,7 +1,6 @@
 <template>
   <div class="container mx-auto p-8 pt-12">
-    <!-- 페이지 제목 및 검색바 -->
-    <div class="flex justify-between items-center mb-12 mt-8">
+    <div class="rounded-lg p-8 flex justify-between items-center mb-16">
       <h1 class="text-2xl font-bold">나의 계약서</h1>
       <div class="flex items-center space-x-4">
         <input
@@ -31,7 +30,6 @@
               ></path>
             </svg>
           </button>
-          <!-- 정렬 드롭다운 메뉴 -->
           <div
             v-if="isSortDropdownOpen"
             class="absolute mt-1 right-0 w-full bg-white border border-gray-300 rounded-lg z-10"
@@ -53,7 +51,6 @@
       </div>
     </div>
 
-    <!-- 테이블 섹션 -->
     <div class="min-h-[400px]">
       <table class="w-full bg-white rounded-lg table-fixed">
         <thead class="bg-gray-100">
@@ -92,7 +89,6 @@
       </table>
     </div>
 
-    <!-- 페이지네이션 섹션 -->
     <div class="flex justify-end space-x-2 mt-6">
       <button
         @click="goToPage(page)"
@@ -104,7 +100,6 @@
             ? 'bg-gray-800 text-white'
             : 'bg-white text-gray-800',
         ]"
-        class="hover:bg-gray-200"
       >
         {{ page }}
       </button>
@@ -112,102 +107,68 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "MypageContract",
-  data() {
-    return {
-      searchQuery: "", // 검색어
-      isSortDropdownOpen: false, // 정렬 드롭다운 메뉴의 상태
-      sortKey: "latest", // 현재 정렬 키
-      currentPage: 1, // 현재 페이지
-      perPage: 5, // 페이지당 항목 수
-      reports: [
-        {
-          address: "강서구 방화대로47가길 22",
-          deposit: 420000000,
-          createdAt: "2024.09.11 11:00",
-        },
-        {
-          address: "강서구 양천로26길 24-10",
-          deposit: 280000000,
-          createdAt: "2024.09.11 15:00",
-        },
-        {
-          address: "강서구 방화대로 351",
-          deposit: 370000000,
-          createdAt: "2024.09.12 18:00",
-        },
-        {
-          address: "강서구 등촌로39마길 4",
-          deposit: 210000000,
-          createdAt: "2024.09.13 8:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          createdAt: "2024.09.16 15:00",
-        },
-        {
-          address: "양천구 목동동로12길 55-9",
-          deposit: 210000000,
-          createdAt: "2024.09.16 15:00",
-        },
-      ],
-    };
-  },
-  computed: {
-    filteredReports() {
-      let filtered = this.reports.filter((report) =>
-        report.address.includes(this.searchQuery)
-      );
-      return this.sortKey === "latest"
-        ? filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        : filtered.sort(
-            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-          );
-    },
-    paginatedReports() {
-      const start = (this.currentPage - 1) * this.perPage;
-      const end = this.currentPage * this.perPage;
-      return this.filteredReports.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.filteredReports.length / this.perPage);
-    },
-    sortButtonText() {
-      return this.sortKey === "latest" ? "최신순" : "오래된순";
-    },
-  },
-  methods: {
-    toggleSortDropdown() {
-      this.isSortDropdownOpen = !this.isSortDropdownOpen;
-    },
-    sortBy(key) {
-      this.sortKey = key;
-      this.isSortDropdownOpen = false;
-    },
-    goToPage(page) {
-      this.currentPage = page;
-    },
-    formatPrice(value) {
-      return value.toLocaleString();
-    },
-  },
+<script setup>
+import { ref, computed } from 'vue';
+import axios from 'axios';
+
+const searchQuery = ref('');
+const isSortDropdownOpen = ref(false);
+const sortKey = ref('latest');
+const currentPage = ref(1);
+const perPage = 5;
+
+const reports = ref([
+  { address: "강서구 방화대로47가길 22", deposit: 420000000, createdAt: "2024.09.11 11:00" },
+  { address: "강서구 양천로26길 24-10", deposit: 280000000, createdAt: "2024.09.11 15:00" },
+  { address: "강서구 방화대로 351", deposit: 370000000, createdAt: "2024.09.12 18:00" },
+  { address: "강서구 등촌로39마길 4", deposit: 210000000, createdAt: "2024.09.13 8:00" },
+  { address: "양천구 목동동로12길 55-9", deposit: 210000000, createdAt: "2024.09.16 15:00" },
+]);
+
+const filteredReports = computed(() => {
+  return reports.value.filter(report =>
+    report.address.includes(searchQuery.value)
+  ).sort((a, b) => 
+    sortKey.value === 'latest' 
+      ? new Date(b.createdAt) - new Date(a.createdAt) 
+      : new Date(a.createdAt) - new Date(b.createdAt)
+  );
+});
+
+const paginatedReports = computed(() => {
+  const start = (currentPage.value - 1) * perPage;
+  return filteredReports.value.slice(start, start + perPage);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredReports.value.length / perPage);
+});
+
+const sortButtonText = computed(() => {
+  return sortKey.value === 'latest' ? '최신순' : '오래된순';
+});
+
+const toggleSortDropdown = () => {
+  isSortDropdownOpen.value = !isSortDropdownOpen.value;
 };
+
+const sortBy = (key) => {
+  sortKey.value = key;
+  isSortDropdownOpen.value = false;
+};
+
+const goToPage = (page) => {
+  currentPage.value = page;
+};
+
+const formatPrice = (value) => {
+  return value.toLocaleString();
+};
+
 </script>
+
+<style scoped>
+.container {
+  width: 80%; /* 전체 컨테이너의 너비를 80%로 설정 */
+}
+</style>
