@@ -45,6 +45,7 @@ const date = ref('');
 const time = ref('');
 const phoneError = ref(null);
 const accessToken = ref(null);
+
 const router = useRouter();
 
 const validatePhone = () => {
