@@ -120,6 +120,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const reportList = ref([]);
@@ -132,6 +133,8 @@ const currentPage = ref(1);
 const perPage = ref(5); 
 const totalPages = ref(1); 
 const userId = 1;
+
+const router = useRouter();
 
 const toggleSortDropdown = () => {
   isSortDropdownOpen.value = !isSortDropdownOpen.value;
@@ -183,8 +186,7 @@ const fetchReport = async (index) => {
     return;
   }
   try {
-    const reportResponse = await axios.get(`http://localhost:8080/api/report/${userId}/${reportId}`);
-    // 이제 리포트 뷰의 내용들이랑 매칭해서 리포트 뷰에 넘겨야함
+    router.push(`/report/result/${reportId}`);
   } catch (error) {
     console.log("조회 중 오류 발생", error)
     alert("조회에 실패했습니다. 다시 시도해주세요.")

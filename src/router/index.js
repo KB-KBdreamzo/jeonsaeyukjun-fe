@@ -27,7 +27,7 @@ const router = createRouter({
       component: ReportInputView,
     },
     {
-      path: '/report/result',
+      path: '/report/result/:reportId',
       name: 'reportResult',
       component: ReportResultView,
     },
