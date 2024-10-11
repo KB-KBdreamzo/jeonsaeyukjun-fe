@@ -1,13 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
+
 import AgentView from "@/views/AgentView.vue";
 import ReportInputView from '@/views/report/ReportInputView.vue'
 import ReportResultView from "@/views/report/ReportResultView.vue";
 import MapView from "@/views/MapView.vue";
-import MypageView from "@/views/mypage/MypageView.vue";
-import MypageReportView from "@/views/mypage/MypageReportView.vue";
-import MypageContractView from "@/views/mypage/MypageContractView.vue";
 import BookingConfirmView from '@/views/Agent/BookingConfirmView.vue';
+import AgentBookView from '@/views/Agent/AgentBookView.vue';
+import MypageView from '@/views/MypageView.vue';
+import MypageReport from '@/views/MypageReport.vue';
+import MypageContract from '@/views/MypageContract.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +42,11 @@ const router = createRouter({
       path: '/agent',
       name: 'agentPage',
       component: AgentView
+    },
+    {
+      path: '/agent/book',
+      name: 'AgentBookPage',
+      component: AgentBookView,
     },
     {
       path: "/mypage",

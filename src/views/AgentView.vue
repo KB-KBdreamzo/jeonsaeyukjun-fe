@@ -89,11 +89,14 @@
   
   <script setup>
   import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
   import axios from 'axios';
   import { legalCode } from '@/assets/logalCode'; // JSON 파일 경로
   import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
   import { ChevronDownIcon } from '@heroicons/vue/20/solid';
   
+  const router = useRouter();
+
   const selectedSido = ref('');
   const selectedSigugun = ref('');
   const selectedDong = ref('');
@@ -105,6 +108,12 @@
   const isSigugunDropdownOpen = ref(false);
   const isDongDropdownOpen = ref(false);
   const agents = ref([]);
+
+  const reserveAgent = (agent) => {
+  router.push({
+    name: 'AgentBookPage', 
+  });
+};
 
   const selectSido = (code) => {
     selectedSido.value = code;
@@ -144,7 +153,7 @@
     const legalCode = parseInt(selectedSido.value.sido + selectedSigugun.value.sigugun + selectedDong.value.dong + "00");
     try {
       console.log(legalCode);
-      const response = await axios.get(`http://localhost:8088/api/agent/${legalCode}`);
+      const response = await axios.get(`http://localhost:8080/api/agent/${legalCode}`);
       console.log(response.data);
       agents.value = response.data; 
     } catch (error) {
