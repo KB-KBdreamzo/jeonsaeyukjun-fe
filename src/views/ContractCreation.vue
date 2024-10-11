@@ -1,12 +1,13 @@
 <template>
-    <!-- <main class="flex overflow-hidden flex-row items-start bg-white"> -->
-    <!-- <main class="grid grid-cols-1 md:grid-cols-[480px_1fr] h-screen bg-white"> -->
-    <main class="grid grid-cols-[480px_1fr] hscreen">
+    <main class="flex h-screen overflow-hidden">
+    <!-- flex: 요소를 Flexbox 레이아웃 설정, h-screen: 요소의 높이를 화면 전체 높이(100vh)로 설정, overflow-hidden: 요소가 화면을 벗어나는 내용이 있을 때 이를 숨김(스크롤이 생기지 않음)-->
 
         <!-- Left Side: 계약서 작성 섹션 -->
-        <!-- <section class="flex left-0 flex-col justify-between items-center p-5 max-w-full bg-white shadow-[4px_0px_15px_rgba(0,0,0,0.15)] w-[480px]"> -->
-        <section class="fixed left-0 top-0 md:w-[calc(50%-80px)] h-full p-4 border border-gray-300 overflow-y-auto ml-[80px]">
-
+        <section class="border-gray-300 h-full overflow-y-auto overflow-x-hidden w-[480px] lg:w-[480px] sm:w-full shadow-lg">
+        <!-- border-gray-300: 요소의 테두리 색상을 gray로 설정, h-full: 요소의 높이를 부모 요소(main)의 전체 높이로 설정,
+        overflow-y-auto: 세로 방향으로 넘치는 내용이 있을 때 스크롤 활성화, overflow-x-hidden: 가로 방향으로 넘치는 내용이 있을 때 이를 숨김,
+        w-[480px]: 요소의 너비를 480px로 고정 설정, lg:w-[480px]: 큰 화면(1024px 이상)에서 요소의 너비가 480px로 고정,
+        sm:w-full: 작은 화면(640px 이하)에서 요소의 너비를 100%로 설정-->
             <div class="flex flex-col flex-1 max-w-full w-[378px]">
                 <header class="flex gap-10 items-center py-8 w-full font-bold">
                     <h1 class="self-stretch my-auto text-5xl tracking-tighter leading-none text-zinc-800 max-md:text-4xl whitespace-nowrap">
@@ -54,8 +55,11 @@
         </section>
         
         <!-- Right Side: Contract Display 섹션 -->
-        <!-- <section class="w-full p-4 border border-gray-300 h-screen"> -->
-        <section class="fixed right-0 top-0 md:w-1/2 h-full p-4 border border-gray-300 overflow-y-auto">
+        <section class="flex-1 bg-white h-full overflow-y-auto overflow-x-hidden hidden sm:block">
+        <!-- flex-1: 해당 요소가 부모의 Flex 컨테이너 내에서 가용 가능한 공간을 차지하도록 설정, bg-white: 배경색을 흰색으로 설정
+        h-full: 높이를 부모 요소의 높이와 동일하게 설정, overflow-y-auto: 세로 방향에서 내용이 냄칠 경우 스크롤이 자동으로 나타나도록 설정
+        overflow-x-hidden: 가로 방향에서 내용이 넘칠 경우 숨기도록 설정, hidden: 기본적으로 이 섹션을 숨김
+        sm:block: 작은 화면(640px 이상)일 때 이 섹션을 보이도록 설정-->
             <div class="sticky top-0 bg-white z-10 border-b border-gray-300 overflow-y-auto h-full">
             <!-- LandlordTenantInfo의 이름을 ContractDisplay에 전달 -->
             <ContractDisplay 
