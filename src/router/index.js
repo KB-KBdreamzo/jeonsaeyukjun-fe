@@ -1,6 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import ReportPage from "@/views/ReportView.vue";
+
+import AgentView from "@/views/AgentView.vue";
+import ReportInputView from '@/views/report/ReportInputView.vue'
+import ReportResultView from "@/views/report/ReportResultView.vue";
+import MapView from "@/views/MapView.vue";
+import BookingConfirmView from '@/views/Agent/BookingConfirmView.vue';
+import AgentBookView from '@/views/Agent/AgentBookView.vue';
+import MypageView from '@/views/mypage/MypageView.vue';
+import MypageReportView from '@/views/mypage/MypageReportView.vue';
+import MypageContractView from '@/views/mypage/MypageContractView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,27 +17,53 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
+      component: HomeView,
+    },
+    {
+      path: "/map",
+      name: "map",
       component: MapView,
     },
     {
-      path: "/report",
-      name: "ReportPage",
-      component: ReportPage,
+      path: '/booking-confirm',
+      name: 'BookingConfirmPage',
+      component: BookingConfirmView,
     },
     {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import("../views/AboutView.vue"),
+      path: "/report/input",
+      name: "reportInput",
+      component: ReportInputView,
     },
     {
-      path: "/oauth/kakao",
-      name: "kakaoOauth",
-      component: KakaoOauth,
+      path: '/report/result/:reportId',
+      name: 'reportResult',
+      component: ReportResultView,
+    },
+    {
+      path: '/agent',
+      name: 'agentPage',
+      component: AgentView
+    },
+    {
+      path: '/agent/book',
+      name: 'AgentBookPage',
+      component: AgentBookView,
+    },
+    {
+      path: "/mypage",
+      name: "mypage",
+      component: MypageView,
+    },
+    {
+      path: "/mypage/reports",
+      name: "mypageReport",
+      component: MypageReportView,
+    },
+    {
+      path: "/mypage/contracts",
+      name: "mypageContract",
+      component: MypageContractView,
     },
   ],
 });
-
-export default router;
+export default router

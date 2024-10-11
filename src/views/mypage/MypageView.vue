@@ -1,0 +1,133 @@
+<template>
+  <div class="container mx-auto p-8 pt-12">
+    <div
+      class="bg-gray-100 rounded-lg p-8 flex justify-between items-center mb-16"
+    >
+      <div class="flex items-center">
+        <div
+          class="bg-white w-24 h-24 rounded-full flex items-center justify-center mr-6 shadow-lg"
+        >
+          <img
+            src="@/assets/아자핑.png"
+            alt="profile-image"
+            class="w-20 h-20 rounded-full"
+          />
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold">아자핑</h2>
+          <p class="text-gray-600 mt-2">yundabin0608@naver.com</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between space-x-16 mx-2">
+      <div class="w-1/2">
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">전세사기 리포트 조회</h2>
+            <router-link to="/mypage/reports">
+              <button
+                class="border bg-gray-800 text-white px-4 py-1 rounded-full hover:bg-gray-300 ml-auto"
+              >
+                더보기
+              </button>
+            </router-link>
+          </div>
+          <ul class="space-y-1">
+            <li
+              v-for="(report, index) in reportList"
+              :key="index"
+              class="flex justify-between items-center bg-white border-b py-4 border-gray-200"
+            >
+              <span>{{ report.roadName + report.detailAddress }}</span>
+              <span
+                class="px-4 py-1 rounded-full text-white ml-auto"
+                :class="getStatusClass(report.status)"
+              >
+                {{ report.status }}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="w-1/2">
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">계약서 조회</h2>
+            <router-link to="/mypage/contracts">
+              <button
+                class="border bg-gray-800 text-white px-4 py-1 rounded-full hover:bg-gray-300 ml-auto"
+              >
+                더보기
+              </button>
+            </router-link>
+          </div>
+          <ul class="space-y-1">
+            <li
+              v-for="(contract, index) in contractList"
+              :key="index"
+              class="flex justify-between items-center py-4 bg-white border-b border-gray-200"
+            >
+              <span>{{ contract.address }}</span>
+              <button
+                class="text-gray-500 px-4 py-1 rounded-full hover:bg-gray-100 bg-buttonBeige"
+              >
+                확인
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+
+const reportList = ref([]);
+const contractList = ref([
+  { address: "강서구 방화대로47가길 22" },
+  { address: "강서구 양천로26길 24-10" },
+  { address: "강서구 방화대로 351" },
+]);
+
+const getStatusClass = (status) => {
+  if (status === "안전") return "bg-green-400"; 
+  if (status === "양호" || status === "보통") return "bg-yellow-300"; 
+  if (status === "위험" || status === "주의") return "bg-red-400"; 
+  return "bg-gray-300"; 
+};
+
+const calculateStatus = (safetyScore) => {
+  if (safetyScore > 80) return "안전";
+  if (safetyScore > 60) return "양호";
+  if (safetyScore > 40) return "보통";
+  if (safetyScore > 20) return "위험";
+  return "주의";
+};
+
+const fetchReports = async (userId) => {
+  try {
+    const reportResponse = await axios.get(
+      `http://localhost:8080/api/report/${userId}?sortKey=latest&page=1&size=4`
+    );
+    reportList.value = reportResponse.data.reports.map((report) => ({
+      ...report, 
+      status: calculateStatus(report.safetyScore), 
+    }));
+  } catch (error) {
+    console.error("데이터를 불러오는 중 오류 발생:", error);
+  }
+};
+
+fetchReports("1");
+</script>
+
+<style scoped>
+.container {
+  width: 80%; 
+}
+</style>

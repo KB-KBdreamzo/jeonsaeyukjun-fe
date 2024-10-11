@@ -1,38 +1,29 @@
 <template>
   <div id="app">
     <header
-      class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
+        class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
     >
       <div class="flex items-center ml-20">
         <img
-          src="@/assets/logo.png"
-          alt="전세역전 로고"
-          class="w-12 h-12 mr-2"
+            src="@/assets/logo.png"
+            alt="전세역전 로고"
+            class="w-12 h-12 mr-2"
         />
         <span class="text-xl font-custom">전세역전</span>
       </div>
-      <nav class="mr-20">
+      <nav class="mr-40">
         <ul class="flex space-x-20">
           <li>
-            <a
-              href="#"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >리포트</a
-            >
+            <router-link to="/report/input" class="text-black font-bold hover:text-gray-300 font-normal">리포트</router-link>
           </li>
           <li>
-            <a
-              href="#"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >지도</a
-            >
+            <router-link to="/map" class="text-black font-bold hover:text-gray-300 font-normal">지도</router-link>
           </li>
           <li>
-            <a
-              href="#"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >계약서</a
-            >
+            <router-link to="/contract" class="text-black font-bold hover:text-gray-300 font-normal">계약서</router-link>
+          </li>
+          <li>
+            <router-link to="/agent" class="text-black font-bold hover:text-gray-300 font-normal">공인중개사</router-link>
           </li>
           <li>
             <a
