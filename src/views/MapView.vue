@@ -160,7 +160,6 @@ export default {
         const locPosition = new kakao.maps.LatLng(lat, lng);
         map.value.setCenter(locPosition);
         placeMarker(lat, lng);
-
         // 도로명주소를 가져와서 sidebarTitle에 설정
         const roadNameAddress = await getRoadNameAddress(lat, lng);
         if (roadNameAddress) {
@@ -270,7 +269,6 @@ export default {
     const handleSearch = async (query) => {
       await moveToSearchedLocation(query);
     };
-
 
     const fetchPriceDataForVisibleArea = async () => {
       try {
@@ -691,6 +689,4 @@ export default {
   margin-bottom: 20px;
   color: #555;
 }
-
-
 </style>
