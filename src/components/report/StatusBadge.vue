@@ -1,32 +1,21 @@
 <template>
   <span
     :class="[
-      'status', 
-      'py-2', 'px-4', 'rounded-full', 'text-center', 
-      { 'bg-yellow-200 text-yellow-600': hasRecord, 'bg-gray-200 text-gray-600': !hasRecord }
+      'status', 'py-2', 'px-4', 'rounded-full', 'text-center', 'font-bold', 'tracking-widest',
+      { 'text-badge-txt-yes bg-badge-bg-yes': hasRecord, 'text-badge-txt-no bg-badge-bg-no': !hasRecord }
     ]"
     style="min-width: 90px;"
   >
-    {{ hasRecord ? statusMessage : '없음' }}
+    {{ status }}
   </span>
 </template>
 
 <script setup>
 const props = defineProps({
   status: {
-    type: [Number, Boolean],
+    type: [String, Boolean], 
     required: true
   }
 });
-
-const hasRecord = props.status > 0 || props.status === true;
-const statusMessage = props.status > 0 ? `${props.status}건` : '있음';
+const hasRecord = props.status && props.status !== '없 음';
 </script>
-
-<style scoped>
-.status {
-  display: inline-block;
-  width: 90px;
-  text-align: center;
-}
-</style>

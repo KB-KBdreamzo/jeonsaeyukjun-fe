@@ -102,41 +102,32 @@ const expanded = ref(false);
 
 const safetyStatus = computed(() => {
   const score = reportStore.reportData.safetyScore 
-  if (score >= 80) {
-    return '안전';
-  } else if (score >= 60) {
-    return '양호';
-  } else if (score >= 40) {
-    return '보통';
-  } else if (score >= 20) {
-    return '주의';
-  } else {
-    return '위험';
+  if (score >= 80) { return '안전';
+  } else if (score >= 60) { return '양호';
+  } else if (score >= 40) { return '보통';
+  } else if (score >= 20) { return '주의';
+  } else { return '위험';
   }
 });
 
 const estimatedLoss = computed(() => {
-  const nowDeposit = reportStore.reportData.deposit
-  const nowPrice = reportStore.reportData.nowPrice
-  const salePriceRatio = reportStore.reportData.salePriceRatio
-  const priorityDeposit = reportStore.reportData.registerDto.priorityDeposit
-  const loss = (nowPrice * salePriceRatio) - priorityDeposit - nowDeposit
+  const loss = parseInt( reportStore.reportData.nowPrice * reportStore.reportData.salePriceRatio /100) 
+                - reportStore.reportData.registerDto.priorityDeposit - reportStore.reportData.deposit
   return loss > 0 ? 0 : -loss
 });
 
 const riskFactor = computed(() => {
-  let count = 0;
-  if (reportStore.reportData.registerDto.auctionRecord) count++;
-  if (reportStore.reportData.registerDto.injuctionRecord) count++;
-  if (reportStore.reportData.registerDto.trustRegistrationRecord) count++;
-  if (reportStore.reportData.registerDto.redemptionRecord) count++;
-  if (reportStore.reportData.registerDto.registrationRecord) count++;
+  let count = reportStore.reportData.registerDto.auctionRecord + 
+  reportStore.reportData.registerDto.injuctionRecord +
+  reportStore.reportData.registerDto.trustRegistrationRecord +
+  reportStore.reportData.registerDto.redemptionRecord +
+  reportStore.reportData.registerDto.registrationRecord +
+  reportStore.reportData.highTaxDelinquent +
+  reportStore.reportData.rentalFraud ;
   if (reportStore.reportData.registerDto.seizureCount > 0) count++;
   if (reportStore.reportData.registerDto.provisionalSeizureCount > 0) count++;
   if (reportStore.reportData.registerDto.leaseholdRegistrationCount > 0) count++;
   if (reportStore.reportData.registerDto.mortgageCount > 0) count++;
-  if (reportStore.reportData.highTaxDelinquent) count++;
-  if (reportStore.reportData.rentalFraud) count++;
   return count; 
 });
 

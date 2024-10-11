@@ -30,13 +30,12 @@ import { useReportStore } from '@/stores/reportStore'; // reportStore 가져오�
 import StatusBadge from "@/components/report/StatusBadge.vue"; // StatusBadge 컴포넌트 가져오기
 
 const reportStore = useReportStore();
-
 const landlordInfo = computed(() => [
-  { label: "가압류 설정 내역", status: reportStore.reportData.registerDto.provisionalSeizureCount > 0 ? `${reportStore.reportData.registerDto.provisionalSeizureCount}건` : "없음" },
-  { label: "압류 설정 내역", status: reportStore.reportData.registerDto.seizureCount > 0 ? `${reportStore.reportData.registerDto.provisionalSeizureCount}건` : "없음" },
-  { label: "가등기 설정 내역", status: reportStore.reportData.registerDto.registrationRecord ? "있음" : "없음" },
-  { label: "환매특약 등기 내역", status: reportStore.reportData.registerDto.redemptionRecord ? "있음" : "없음" },
-  { label: "가처분 내역", status: reportStore.reportData.registerDto.injuctionRecord ? "있음" : "없음" },
+  { label: "가압류 설정 내역", status: reportStore.reportData.registerDto.provisionalSeizureCount > 0 ? `${reportStore.reportData.registerDto.provisionalSeizureCount} 건` : "없 음" },
+  { label: "압류 설정 내역", status: reportStore.reportData.registerDto.seizureCount > 0 ? `${reportStore.reportData.registerDto.seizureCount} 건` : "없 음" },
+  { label: "가등기 설정 내역", status: reportStore.reportData.registerDto.registrationRecord ? "있 음" : "없 음" },
+  { label: "환매특약 등기 내역", status: reportStore.reportData.registerDto.redemptionRecord ? "있 음" : "없 음" },
+  { label: "가처분 내역", status: reportStore.reportData.registerDto.injuctionRecord ? "있 음" : "없 음" },
 ]);
 
 </script>
