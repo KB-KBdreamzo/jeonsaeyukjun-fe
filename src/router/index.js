@@ -1,13 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import ReportPage from "@/views/ReportView.vue";
-import AgentPage from "@/views/AgentView.vue";
+import AgentView from "@/views/AgentView.vue";
 import ReportInputView from '@/views/report/ReportInputView.vue'
 import ReportResultView from "@/views/report/ReportResultView.vue";
 import MapView from "@/views/MapView.vue";
-import MypageView from "@/views/MypageView.vue";
-import MypageReport from "@/views/MypageReport.vue";
-import MypageContract from "@/views/MypageContract.vue";
+import MypageView from "@/views/mypage/MypageView.vue";
+import MypageReportView from "@/views/mypage/MypageReportView.vue";
+import MypageContractView from "@/views/mypage/MypageContractView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,37 +14,42 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
+      component: HomeView,
+    },
+    {
+      path: "/map",
+      name: "map",
       component: MapView,
     },
     {
       path: "/report/input",
-      name: "ReportInputPage",
+      name: "reportInput",
       component: ReportInputView,
     },
     {
       path: '/report/result',
-      name: 'ReportResultPage',
+      name: 'reportResult',
       component: ReportResultView,
     },
     {
       path: '/agent',
-      name: 'AgentPage',
-      component: AgentPage
+      name: 'agentPage',
+      component: AgentView
     },
     {
       path: "/mypage",
-      name: "Mypage",
+      name: "mypage",
       component: MypageView,
     },
     {
       path: "/mypage/reports",
-      name: "MypageReport",
-      component: MypageReport,
+      name: "mypageReport",
+      component: MypageReportView,
     },
     {
       path: "/mypage/contracts",
-      name: "MypageContract",
-      component: MypageContract,
+      name: "mypageContract",
+      component: MypageContractView,
     },
   ],
 });
