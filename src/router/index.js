@@ -1,21 +1,30 @@
-import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue'
 import ReportPage from "@/views/ReportView.vue";
 import AgentPage from "@/views/AgentView.vue";
 import ReportInputView from '@/views/report/ReportInputView.vue'
 import ReportResultView from "@/views/report/ReportResultView.vue";
 import MapView from "@/views/MapView.vue";
-import MypageView from "@/views/MypageView.vue";
-import MypageReport from "@/views/MypageReport.vue";
-import MypageContract from "@/views/MypageContract.vue";
+import AgentView from '@/views/Agent/AgentView.vue';
+import BookingConfirmView from '@/views/Agent/BookingConfirmView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/",
-      name: "home",
-      component: MapView,
+      path: '/',
+      name: 'home',
+      component: HomeView,
+    },
+    {
+      path: '/agent',
+      name: 'AgentPage',
+      component: AgentView,
+    },
+    {
+      path: '/booking-confirm',
+      name: 'BookingConfirmPage',
+      component: BookingConfirmView,
     },
     {
       path: "/report/input",
