@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto py-10">
+  <div class="container mx-auto">
     <div class="pb-10 pt-10 flex justify-between items-center w-10/12 mx-auto">
       <div class="flex items-center gap-14">
         <img src="/src/assets/report/report1.png" alt="house" class="w-24 h-24" />
@@ -93,15 +93,9 @@
         </div>
       </div>
     </div>
+    
     <!-- 리포트 생성 버튼 -->
     <div class="mt-20 flex justify-center">
-      <!-- <button
-        class="w-80 bg-black text-white py-3 rounded-lg shadow-md hover:bg-black transition-colors disabled:opacity-50"
-        @click="addReport"
-        :disabled="!canAddReport"
-      >
-        Create Report
-      </button> -->
       <button type="button" class="w-80 inline-flex justify-center items-center py-3 shadow rounded-lg text-white bg-black disabled:opacity-50"
           @click="addReport"
           :disabled="!canAddReport"
@@ -169,10 +163,11 @@ const handleFileUpload = (event) => {
 
 const confirmFile = async () => {
   if (uploadedFile.value) {
-    isFileLoading.value = true;  // 로딩 시작 
+    isFileLoading.value = true;  
     try {
       await registerStore.fetchRegister(uploadedFile.value);
       checkValidation();
+      console.log(registerStore.registerData)
     } catch (error) {
       console.error("파일 확인 중 오류:", error);
     } finally {
@@ -202,7 +197,6 @@ const checkValidation = () => {
 
 const addReport = async () => {
   if (canAddReport.value) {
-    console.log("리포트 생성 및 저장")
     isReportLoading.value = true;
     try {
         await reportStore.addReport({
@@ -215,9 +209,9 @@ const addReport = async () => {
     } catch (error) {
       console.error("리포트 저장 및 조회 실패", error);
     } finally {
-      isFileLoading.value = false; // 로딩 완료
-      console.log("리포트 완료 라우터 넘어갈거임")
-      router.push('/report/result')
+      isFileLoading.value = false; 
+      const reportId = reportStore.reportId
+      router.push(`result/${reportId}`)
     }
   }
 };

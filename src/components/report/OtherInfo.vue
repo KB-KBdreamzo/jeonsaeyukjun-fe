@@ -31,8 +31,8 @@ import StatusBadge from "@/components/report/StatusBadge.vue"; // StatusBadge �
 const reportStore = useReportStore();
 
 const otherInfo = computed(() => [
-  { label: "신탁 등기 설정 내역", status: reportStore.reportData.registerDto.trustRegistrationRecord ? "있음" : "없음" },
-  { label: "전세권 설정 내역", status: reportStore.reportData.registerDto.leaseholdRegistrationCount > 0 ? "있음" : "없음" },
+  { label: "신탁 등기 설정 내역", status: reportStore.reportData.registerDto.trustRegistrationRecord ? "있 음" : "없 음" },
+  { label: "전세권 설정 내역", status: reportStore.reportData.registerDto.leaseholdRegistrationCount > 0 ? "있 음" : "없 음" },
 ]);
 
 </script>

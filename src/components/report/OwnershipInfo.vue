@@ -33,10 +33,10 @@ import StatusBadge from "@/components/report/StatusBadge.vue"; // StatusBadge �
 const reportStore = useReportStore();
 
 const ownershipInfo = computed(() => [
-  { label: "전월세 사기 신고 접수 여부", status: reportStore.reportData.rentalFraud ? "있음" : "없음" },
-  { label: "고액 체납자 여부", status: reportStore.reportData.highTaxDelinquent ? "있음" : "없음" },
-  { label: "근저당권 설정 내역", status: reportStore.reportData.registerDto.mortgageCount ? "있음" : "없음" },
-  { label: "경매 설정 내역", status: reportStore.reportData.registerDto.auctionRecord ? "있음" : "없음" }
+  { label: "전월세 사기 신고 접수 여부", status: reportStore.reportData.rentalFraud ? "있 음" : "없 음" },
+  { label: "고액 체납자 여부", status: reportStore.reportData.highTaxDelinquent ? "있 음" : "없 음" },
+  { label: "근저당권 설정 내역", status: reportStore.reportData.registerDto.mortgageCount ? "있 음" : "없 음" },
+  { label: "경매 설정 내역", status: reportStore.reportData.registerDto.auctionRecord ? "있 음" : "없 음" }
 ]);
 </script>
 
