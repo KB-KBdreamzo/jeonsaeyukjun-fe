@@ -36,20 +36,21 @@
     <transition name="slide">
       <div v-if="isSidebarOpen" class="sidebar">
         <button class="close-button" @click="closeSidebar">←</button>
+        <div class="sidebar-search">
+          <SearchBar @search="handleSidebarSearch" />
+        </div>
+
         <div class="sidebar-content">
-          <!-- 검색 결과 상자 -->
           <div class="search-result-box">
             <h3>검색 결과</h3>
             <p class="location">{{ sidebarTitle }}</p>
-            <!-- 안전도 -->
             <div class="sidebar-section safety-section">
               <h4>안전도</h4>
               <span class="badge" :style="{ backgroundColor: safetyBadgeClass }">{{ safetyScoreText }}</span>
             </div>
 
-            <!-- 전세 시세 -->
             <div class="sidebar-section price-section">
-              <h4>매매 시세</h4>
+<!--              <h4>매매 시세</h4>-->
               <p class="price-info">{{ jeonsePriceInfo }}</p>
             </div>
           </div>
@@ -58,8 +59,10 @@
     </transition>
   </div>
 </template>
+
+
 <script>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import SearchBar from "@/components/SearchBar.vue";
 import axios from "axios";
 
@@ -80,6 +83,7 @@ export default {
     const safetyScoreText = ref("보통");
     const safetyBadgeClass = ref("badge-normal");
     const jeonsePriceInfo = ref("자료가 없습니다");
+    const sidebarSearchQuery = ref("");
 
     const initMap = () => {
       const container = document.getElementById("map");
@@ -89,7 +93,6 @@ export default {
       };
       map.value = new kakao.maps.Map(container, options);
 
-      // 지도 idle 상태에서 다시 데이터를 불러옴
       kakao.maps.event.addListener(map.value, "idle", () => {
         if (isShowingPrice.value) {
           fetchPriceDataForVisibleArea();
@@ -102,14 +105,12 @@ export default {
     };
 
     const openSidebar = (title, safetyText, safetyClass, priceInfo) => {
-      console.log('Sidebar data:', { title, safetyText, safetyClass, priceInfo }); // 디버깅용 로그
       sidebarTitle.value = title;
       safetyScoreText.value = safetyText;
       safetyBadgeClass.value = safetyClass;
       jeonsePriceInfo.value = priceInfo;
       isSidebarOpen.value = true;
     };
-
 
     const closeSidebar = () => {
       isSidebarOpen.value = false;
@@ -121,14 +122,14 @@ export default {
         const response = await axios.get(
             "https://dapi.kakao.com/v2/local/search/address.json",
             {
-              params: {query},
-              headers: {Authorization: `KakaoAK ${apiKey}`},
+              params: { query },
+              headers: { Authorization: `KakaoAK ${apiKey}` },
             }
         );
 
         if (response.data.documents.length > 0) {
-          const {x, y} = response.data.documents[0];
-          return {lat: parseFloat(y), lng: parseFloat(x)};
+          const { x, y } = response.data.documents[0];
+          return { lat: parseFloat(y), lng: parseFloat(x) };
         } else {
           console.error("주소로 좌표를 찾을 수 없습니다.");
         }
@@ -163,7 +164,6 @@ export default {
         // 도로명주소를 가져와서 sidebarTitle에 설정
         const roadNameAddress = await getRoadNameAddress(lat, lng);
         if (roadNameAddress) {
-          // 법정동 코드를 가져오기 위한 API 호출
           const regionResponse = await axios.get(
               "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
               {
@@ -185,7 +185,6 @@ export default {
               }),
             ]);
 
-            // 안전도 데이터 처리
             let safetyText = "자료가 없습니다";
             let safetyColor = "badge-normal";
             if (safetyResponse.data.length > 0) {
@@ -196,7 +195,6 @@ export default {
               safetyColor = color;
             }
 
-            // 매매 시세 데이터 처리
             let priceInfo = "자료가 없습니다";
             if (priceResponse.data.dataBody?.data.length > 0) {
               const priceData = priceResponse.data.dataBody.data[0];
@@ -205,7 +203,6 @@ export default {
               priceInfo = `매매가: ${jeonsePriceInEok}억`;
             }
 
-            // 안전도와 시세 데이터를 함께 사이드바에 반영
             openSidebar(roadNameAddress, safetyText, safetyColor, priceInfo);
           }
         } else {
@@ -213,7 +210,6 @@ export default {
         }
       }
     };
-
 
     const getRoadNameAddress = async (lat, lng) => {
       try {
@@ -238,8 +234,6 @@ export default {
       }
     };
 
-
-
     const removeOverlays = () => {
       markers.value.forEach((marker) => marker.setMap(null));
       markers.value = [];
@@ -251,7 +245,7 @@ export default {
           <div class="text-gray-800 font-bold py-1 px-2" style="background-color: rgba(255, 255, 255, 0.9);">
             ${address}
           </div>
-          <div class="text-black font-bold py-1 px-2" style="background-color: ${color};">
+          <div class="text-white font-bold py-1 px-2" style="background-color: ${color};">
             ${text}
           </div>
         </div>
@@ -266,10 +260,17 @@ export default {
       customOverlay.setMap(map.value);
       markers.value.push(customOverlay);
     };
+    const handleSidebarSearch = async (query) => {
+      await moveToSearchedLocation(query)
+      if (sidebarSearchQuery.value) {
+        handleSearch(sidebarSearchQuery.value);
+      }
+    };
 
     const handleSearch = async (query) => {
       await moveToSearchedLocation(query);
     };
+
 
     const fetchPriceDataForVisibleArea = async () => {
       try {
@@ -281,8 +282,8 @@ export default {
         const regionResponse = await axios.get(
             "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
             {
-              params: {x: lng, y: lat},
-              headers: {Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}`},
+              params: { x: lng, y: lat },
+              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
             }
         );
 
@@ -295,7 +296,7 @@ export default {
         const priceResponse = await axios.get(
             "https://api.kbland.kr/land-price/price/fastPriceInfo",
             {
-              params: {법정동코드: lawCode, 유형: 2, 거래유형: 0},
+              params: { 법정동코드: lawCode, 유형: 2, 거래유형: 0 },
             }
         );
 
@@ -307,7 +308,7 @@ export default {
               const jeonsePrice = item.매매[0].일반평균;
               const coordinates = await getCoordinatesFromAddress(address);
               if (coordinates) {
-                const {lat, lng} = coordinates;
+                const { lat, lng } = coordinates;
                 const jeonsePriceInEok = (jeonsePrice / 10000).toFixed(1);
                 createTextOverlay(
                     lat,
@@ -335,7 +336,7 @@ export default {
         const lng = center.getLng();
 
         const response = await axios.get("http://localhost:8080/api/incidents", {
-          params: {x: lng, y: lat},
+          params: { x: lng, y: lat },
         });
 
         const incidentData = response.data;
@@ -375,11 +376,26 @@ export default {
         const lat = center.getLat();
         const lng = center.getLng();
 
+        const addressResponse = await axios.get(
+            "https://dapi.kakao.com/v2/local/geo/coord2address.json",
+            {
+              params: { x: lng, y: lat },
+              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
+            }
+        );
+
+        if (!addressResponse.data.documents || addressResponse.data.documents.length === 0) {
+          console.error("주소를 가져올 수 없습니다.");
+          return;
+        }
+
+        const roadAddress = addressResponse.data.documents[0].road_address?.address_name || "도로명 주소 없음";
+
         const regionResponse = await axios.get(
             "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json",
             {
-              params: {x: lng, y: lat},
-              headers: {Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}`},
+              params: { x: lng, y: lat },
+              headers: { Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}` },
             }
         );
 
@@ -389,12 +405,11 @@ export default {
         }
 
         const lawCode = regionResponse.data.documents[0].code;
-        const address = regionResponse.data.documents[0].address_name;
 
         const safetyResponse = await axios.get(
             "http://localhost:8080/api/safety-data",
             {
-              params: {법정동코드: lawCode},
+              params: { 법정동코드: lawCode },
             }
         );
 
@@ -402,30 +417,30 @@ export default {
           const safetyData = safetyResponse.data[0];
           const safetyScore = safetyData.safetyScore || 0;
 
-          const {text, color} = categorizeSafetyScore(safetyScore);
-          createTextOverlay(lat, lng, address, text, color);
+          const { text, color } = categorizeSafetyScore(safetyScore);
+          createTextOverlay(lat, lng, `${roadAddress}`, text, color);
         } else {
-          createTextOverlay(lat, lng, address, "자료가 없습니다", "rgb(128, 128, 128)");
+          createTextOverlay(lat, lng, `${roadAddress}`, "자료가 없습니다", "rgb(128, 128, 128)");
         }
       } catch (error) {
         console.error("안전도 데이터를 불러오는 데 실패했습니다:", error.response?.data || error.message);
-        createTextOverlay(center.getLat(), center.getLng(), "현재 위치", "자료가 없습니다", "rgb(128, 128, 128)");
+        createTextOverlay(lat, lng, "현재 위치", "자료가 없습니다", "rgb(128, 128, 128)");
       }
     };
 
     const categorizeSafetyScore = (score) => {
       if (score >= 0 && score <= 20) {
-        return {text: "위험", color: "rgb(255, 99, 71)"};
+        return { text: "위험", color: "rgb(255, 99, 71)" };
       } else if (score > 20 && score <= 40) {
-        return {text: "주의", color: "rgb(255, 165, 0)"};
+        return { text: "주의", color: "rgb(255, 165, 0)" };
       } else if (score > 40 && score <= 60) {
-        return {text: "보통", color: "rgb(255, 255, 102)"};
+        return { text: "보통", color: "rgb(255, 255, 102)" };
       } else if (score > 60 && score <= 80) {
-        return {text: "양호", color: "rgb(144, 238, 144)"};
+        return { text: "양호", color: "rgb(78,234,78)" };
       } else if (score > 80 && score <= 100) {
-        return {text: "안전", color: "rgb(173, 216, 230)"};
+        return { text: "안전", color: "rgb(0,185,241)" };
       } else {
-        return {text: "데이터 없음", color: "rgb(128, 128, 128)"};
+        return { text: "데이터 없음", color: "rgb(128, 128, 128)" };
       }
     };
 
@@ -476,7 +491,8 @@ export default {
       safetyScoreText,
       safetyBadgeClass,
       jeonsePriceInfo,
-      handleSearch, // 추가
+      handleSearch,
+      handleSidebarSearch
     };
   },
 };
@@ -564,35 +580,44 @@ export default {
 }
 
 .sidebar-content {
-  padding: 20px;
+  padding: 30px;
 }
 
 .sidebar-section {
+  font-size: 1.2rem;
+  font-weight: bold;
   margin-bottom: 20px;
 }
 
-.sidebar-section h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
+.search-result-box h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-.search-result .location {
+.search-result-box .location {
   font-size: 1.1rem;
   font-weight: bold;
-  color: #333;
+  margin-bottom: 20px;
+  color: #555;
 }
 
 .safety-section {
   display: flex;
   align-items: center;
+  margin-bottom: 20px;
 }
+
 
 .safety-section h4 {
   margin-right: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .badge {
-  padding: 5px 10px;
+  padding: 4px 10px;
   font-size: 14px;
   font-weight: bold;
   border-radius: 15px;
@@ -614,8 +639,9 @@ export default {
 }
 
 .price-section .price-info {
-  font-size: 1rem;
-  color: #666;
+  margin-top: 10px;
+  font-size: 1.1rem;
+  color: #0a0a0a;
 }
 
 .close-button {
@@ -630,7 +656,6 @@ export default {
   right: -30px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
 }
-
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.3s ease;
@@ -649,19 +674,23 @@ export default {
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  top: 80px;
 }
 
 .search-result-box h3 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   color: #333;
 }
 
 .search-result-box .location {
   font-size: 1.1rem;
   font-weight: bold;
+  margin-bottom: 20px;
   color: #555;
 }
+
 
 </style>
