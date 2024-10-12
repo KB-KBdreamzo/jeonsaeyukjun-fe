@@ -105,10 +105,18 @@ const closeModal = () => {
   emit("close");
 };
 
-// Kakao 로그인 처리 함수
+const goToHome = () => {
+  closeModal(); // 모달 닫기
+  router.push("/"); // 홈 화면으로 리다이렉트
+};
+
+// Kakao 로그인 관련 설정
+const KAKAO_CLIENT_ID = "6f6db32df8814c2c64f9b4ba9f9160d4";
+const KAKAO_REDIRECT_URI = "http://localhost:5173/oauth/kakao";
+const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+
 const handleKakaoLogin = () => {
-  // 카카오 로그인 처리 로직 (여기서는 이벤트 발생)
-  emit("kakao-login");
+  window.location.href = KAKAO_AUTH_URL;
 };
 </script>
 
