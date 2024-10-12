@@ -7,16 +7,16 @@
         <div v-if="propertyAddress || landUsage || landArea || buildingStructure || buildingArea || rentalPortion || rentalArea" class="mt-4">
             <h3 class="text-lg font-semibold">임차주택의 표시</h3>
             <p>소재지 : {{ propertyAddress || "______" }}</p>
-            <p>토지 - 지목 : {{ landUsage || "______" }}, 면적 : {{ landArea || "______" }}</p>
-            <p>건물 - 구조/용도: {{ buildingStructure || "______" }}, 면적 : {{ buildingArea || "______" }}</p>
-            <p>임차할 부분 : {{ rentalPortion || "______" }}, 면적 : {{ rentalArea || "______" }}</p>
+            <p>토지 - 지목 : {{ landUsage || "______" }}, 면적 : {{ landArea || "______" }} m&sup2</p>
+            <p>건물 - 구조/용도: {{ buildingStructure || "______" }}, 면적 : {{ buildingArea || "______" }} m&sup2</p>
+            <p>임차할 부분 : {{ rentalPortion || "______" }}, 면적 : {{ rentalArea || "______" }} m&sup2</p>
             <p>계약의 종류 : 신규 계약</p>
         </div>
-        <div v-if="leaseStartDate || leaseEndDate || depositAmount || unpaidNationalAndLocalTax || priorityConfirmedDateDetails">
+        <div v-if="leaseStartDate || leaseEndDate || depositAmount">
             <p>* 갱신 전 임대차계약 기간 및 금액</p>
             <p>계약 기간 : {{ leaseStartDate || "______" }} ~ {{ leaseEndDate || "______" }}, 보증금 : {{ depositAmount || "______" }}원 </p>
-            <p>미납 국세/지방세 : {{ unpaidNationalAndLocalTax || "없음" }} (임대인 서명 또는 날인)</p>
-            <p>선순위 확정일자 현황 : {{ priorityConfirmedDateDetails || "없음" }} (임대인 서명 또는 날인)</p>
+            <p>미납 국세/지방세 : {{ unpaidNationalAndLocalTax || "없음 (임대인 서명 또는 날인)" }} </p>
+            <p>선순위 확정일자 현황 : {{ priorityConfirmedDateDetails || "없음 (임대인 서명 또는 날인)" }} </p>
             <p>확정일자 부여란 :</p>
         </div>
         <div v-if="paymentAccount || downPayment || interimPayment || interimPaymentDate || finalPayment || finalPaymentDate || managementFee || repairDetails" class="mt-4">
@@ -74,13 +74,13 @@
             <br>
             <p>- 임대차계약을 체결한 임차인은 임대차계약 체결 시를 기준으로 임대인이 사전에 고지하지 않은 선순위 임대차정보(주택임대차보호법 제 3조의6 제3항)가 있거나 미납 또는 체납한 국세/지방세가 {{ taxAmount || "______"}}원을 초과하는 것을 확인한 경우 임대차기간이 시작하는 날까지 제 5조에도 불구하고 계약금 등의 명목으로 임대인에게 교부한 금전 기타 물건을 포기하지 않고 임대차계약을 해제할 수 있다.</p>
             <br>
-            <p>- 주택 임대차 계약과 관련하여 분쟁이 있는 경우 임대인 또는 임차인은 법원에 소를 제기하기 전에 먼저 임대차분쟁조정위원회에 조정을 신청한다 ( □ 동의 □ 미동의)</p>
+            <p>- 주택 임대차 계약과 관련하여 분쟁이 있는 경우 임대인 또는 임차인은 법원에 소를 제기하기 전에 먼저 임대차분쟁조정위원회에 조정을 신청한다 ( □ {{ agreement }})</p>
             <p>  ※ 주택임대차분쟁조정위원회 조정을 통할 경우 60일(최대 90일) 이내 신속하게 조정 결과를 받아볼 수 있습니다.</p>
             <br>
             <p>- 주택의 철거 또는 재건축에 관한 구체적 계획</p>
-            <p>  ( □ 없음 □ 있음 ※공사시기 : ※ 소요기간 : 개월)</p>
+            <p>  ( □ {{ constructionPlan }} ※공사시기 : {{ constructionTime }} ※ 소요기간 : {{ constructionDuration }} 개월) </p>
             <br>
-            <p>- 상세주소가 없는 경우 임차인의 상세주소부여 신청에 대한 소유자 동의여부 ( □ 동의 □ 미동의)</p>
+            <p>- 상세주소가 없는 경우 임차인의 상세주소부여 신청에 대한 소유자 동의여부 ( □ {{ addressAgreement }})</p>
             <br>
         </div>
         <div v-if="hasAuctionRecord">
@@ -124,11 +124,11 @@
         <div v-if="landlordAddress || landlordResidentId || tenantAddress || tenantResidentId" class="mt-4">
             <p>임대인 - 주소 : {{ landlordAddress || "______"}} , 서명 또는 날인</p>
             <br>
-            <p>주민등록번호 : {{ landlordResidentId || "_ _ _ _ _ _"}} - _ _ _ _ _ _ _, 전화 : 010 - _ _ _ _ - _ _ _ _, 성명 : {{ landlordName }}</p>
+            <p>주민등록번호 : {{ landlordResidentId || "_ _ _ _ _ _ - _ _ _ _ _ _ _"}} , 전화 : 010 - _ _ _ _ - _ _ _ _, 성명 : {{ landlordName }}</p>
             <br>
             <p>임차인 - 주소 : {{ tenantAddress || "______"}} , 서명 또는 날인</p>
             <br>
-            <p>주민등록번호 : {{ tenantResidentId || "_ _ _ _ _ _"}} - _ _ _ _ _ _ _, 전화 : 010 - _ _ _ _ - _ _ _ _, 성명 : {{ tenantName }}</p>
+            <p>주민등록번호 : {{ tenantResidentId || "_ _ _ _ _ _ - _ _ _ _ _ _ _"}} , 전화 : 010 - _ _ _ _ - _ _ _ _, 성명 : {{ tenantName }}</p>
             <br>
         </div>
     </div>
@@ -260,6 +260,26 @@
         hasInjuctionRecord: {
             type: Boolean,
             default: false
+        },
+        agreement: {
+            type: String,
+            required: true
+        },
+        constructionPlan: {
+            type: String,
+            required: true
+        },
+        constructionTime: {
+            type: String,
+            required: true
+        },
+        constructionDuration: {
+            type: Number,
+            required: true
+        },
+        addressAgreement: {
+            type: String,
+            required: true
         }
     }
   }

@@ -23,12 +23,14 @@
             <div class="flex flex-col w-full min-h-[72px]">
 				<label for="depositAmount" class="text-base font-bold leading-none text-gray-400 uppercase">보증금</label>
 				<input
-					type="text"
+					type="number"
 					id="depositAmount"
 					v-model="depositAmount"
 					@input="updateAdditionalInfo('deposit', $event)"
 					class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-					placeholder="보증금"
+					placeholder="원"
+                    step="1"
+                    min="0"
 				/>
 			</div>
 			<div class="flex gap-5 items-start mt-5 w-full">
@@ -40,7 +42,7 @@
 						v-model="unpaidNationalAndLocalTax"
 						@input="updateAdditionalInfo('unpaid', $event)"
 						class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-						placeholder="미납 국세/지방세"
+						placeholder="없음 (임대인 서명 또는 날인)"
 					/>
 				</div>
 			</div>
@@ -53,7 +55,7 @@
 						v-model="priorityConfirmedDateDetails"
 						@input="updateAdditionalInfo('priority', $event)"
 						class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-						placeholder="선순위 확정일자 현황"
+						placeholder="없음 (임대인 서명 또는 날인)"
 					/>
 				</div>
 			</div>
@@ -95,10 +97,10 @@
                 depositAmount.value = value;
                 emit('update-deposit', depositAmount.value); // 'update-deposit' 이벤트로 개별 전달
             } else if (type === 'unpaid') {
-                unpaidNationalAndLocalTax.value = value;
+                unpaidNationalAndLocalTax.value = value === '' ? '없음 (임대인 서명 또는 날인)' : value;
                 emit('update-unpaid', unpaidNationalAndLocalTax.value); // 'update-unpaid' 이벤트로 개별 전달
             } else if (type === 'priority') {
-                priorityConfirmedDateDetails.value = value;
+                priorityConfirmedDateDetails.value = value === '' ? '없음 (임대인 서명 또는 날인)' : value;
                 emit('update-priority', priorityConfirmedDateDetails.value); // 'update-priority' 이벤트로 개별 전달
             }
         }

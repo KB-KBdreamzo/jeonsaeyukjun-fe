@@ -13,6 +13,14 @@
                     <h1 class="self-stretch my-auto text-5xl tracking-tighter leading-none text-zinc-800 max-md:text-4xl whitespace-nowrap">
                         계약서 작성
                     </h1>
+                    <img loading="lazy" 
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/418aa1bebc961b980e6f98c975a408ee93fde73ca20753cda4df25836b836210?apiKey=d111ac40a5bb4ce79c76d09fec0749df&"
+                    class="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
+                    alt=""
+                    @click="openContractModal"
+                    style="cursor: pointer;"
+                    />
+                    <ContractModal v-if="isContractModalOpen" @close="closeContractModal" />
                     <button class="gap-3 self-stretch px-6 py-4 my-auto text-base leading-none text-center text-gray-50 whitespace-nowrap bg-neutral-900 rounded-[90px] max-md:px-5"
                             @click="sendContractData">
                         저장하기
@@ -40,6 +48,7 @@
                 />
                 <ContractContent
                     title="계약 내용"
+                    :depositAmount="depositAmount"
                     @update-payment-dates="handleFinancialDateUpdate"
                     @update-payment-account="handleFinancialInfoUpdate"
                     @update-down-payment="handleFinancialInfoUpdate"
@@ -50,7 +59,13 @@
                 />
                 <SpecialContractContent
                     title="특약 사항"
+                    :agreement="agreement"
+                    :constructionPlan="constructionPlan"
+                    :constructionTime="constructionTime"
+                    :constructionDuration="constructionDuration"
+                    :addressAgreement="addressAgreement"
                 />
+                
             </div>
         </section>
         
@@ -71,11 +86,11 @@
                 :tenantResidentId="tenantResidentId"
                 :propertyAddress="propertyAddress"
                 :landUsage="landUsage"
-                :landArea="landArea"
+                :landArea=landArea.toString()
                 :buildingStructure="buildingStructure"
-                :buildingArea="buildingArea"
+                :buildingArea=buildingArea.toString()
                 :rentalPortion="rentalPortion"
-                :rentalArea="rentalArea"
+                :rentalArea=rentalArea.toString()
                 :leaseStartDate="leaseStartDate"
                 :leaseEndDate="leaseEndDate"
                 :depositAmount="depositAmount"
@@ -94,6 +109,11 @@
                 :hasTrustRegistrationRecord="hasTrustRegistrationRecord"
                 :hasRedemptionRecord="hasRedemptionRecord"
                 :hasInjuctionRecord="hasInjuctionRecord"
+                :agreement="agreement"
+                :constructionPlan="constructionPlan"
+                :constructionTime="constructionTime"
+                :constructionDuration="constructionDuration"
+                :addressAgreement="addressAgreement"
             />
             </div>
         </section>
@@ -103,6 +123,7 @@
 <script lang="ts">
 import { ref, defineComponent, onMounted, toRaw } from 'vue';
 import axios from 'axios';
+import ContractModal from '@/components/contract/ContractModal.vue'
 import LandlordTenantInfo from '@/components/contract/LandlordTenantInfo.vue';
 import PropertyDescription from '@/components/contract/PropertyDescription.vue';
 import LeaseContractContent from '@/components/contract/LeaseContractContent.vue';
@@ -113,6 +134,7 @@ import ContractDisplay from '@/components/contract/ContractDisplay.vue';
 export default defineComponent({
     name: 'ContractCreation',
     components: {
+        ContractModal,
         ContractDisplay,
         LandlordTenantInfo,
         PropertyDescription,
@@ -122,12 +144,14 @@ export default defineComponent({
     },
     setup() {
         // 상태 관리
+        const isContractModalOpen = ref(false);
+
         const landlordName = ref('');
         const landlordAddress = ref('');
-        const landlordResidentId = ref('');
+        const landlordResidentId = ref('_ _ _ _ _ _ - _ _ _ _ _ _ _');
         const tenantName = ref('');
         const tenantAddress = ref('');
-        const tenantResidentId = ref('');
+        const tenantResidentId = ref('_ _ _ _ _ _ - _ _ _ _ _ _ _');
         const propertyAddress = ref('');
         const landUsage = ref('');
         const landArea = ref(0.0);
@@ -139,8 +163,8 @@ export default defineComponent({
         const leaseStartDate = ref('');
         const leaseEndDate = ref('');
         const depositAmount = ref(0);
-        const unpaidNationalAndLocalTax = ref('');
-        const priorityConfirmedDateDetails = ref('');
+        const unpaidNationalAndLocalTax = ref('없음 (임대인 서명 혹은 날인)');
+        const priorityConfirmedDateDetails = ref('없음 (임대인 서명 혹은 날인)');
         const contractConfirmationDate = ref('');
         const paymentAccount = ref('');
         const downPayment = ref('');
@@ -150,6 +174,13 @@ export default defineComponent({
         const finalPaymentDate = ref('');
         const managementFee = ref('');
         const repairDetails = ref('');
+        const landlordPhone = ref('010 - _ _ _ _ - _ _ _ _')
+        const tenantPhone = ref('010 - _ _ _ _ - _ _ _ _')
+        const agreement = ref('');
+        const constructionPlan = ref('');
+        const constructionTime = ref('');
+        const constructionDuration = ref(0);
+        const addressAgreement = ref('');
 
         const reportId = 1;
         const hasAuctionRecord = ref(false); // 경매 넘어간 횟수 기록 여부
@@ -200,8 +231,18 @@ export default defineComponent({
             tenantResidentId: tenantResidentId.value,
             todayYear: '',
             todayMonth: '',
-            todayDay: '' 
+            todayDay: '',
+            landlordPhone: '010 - _ _ _ _ - _ _ _ _',
+            tenantPhone: '010 - _ _ _ _ - _ _ _ _'
         });
+
+        const openContractModal = () => {
+            isContractModalOpen.value = true;
+        };
+
+        const closeContractModal = () => {
+            isContractModalOpen.value = false;
+        };
 
         const updateLeasedStartDto = () => {
             // 날짜 형식이 'YYYY-MM-DD'라고 가정하고 나누기
@@ -311,6 +352,8 @@ export default defineComponent({
                     todayYear: firstContractDto.value.todayYear,
                     todayMonth: firstContractDto.value.todayMonth,
                     todayDay: firstContractDto.value.todayDay,
+                    landlordPhone: landlordPhone.value,
+                    tenantPhone: tenantPhone.value
                 },
                 ownershipInfoDto: ownershipInfoDto.value,
             };
@@ -326,6 +369,7 @@ export default defineComponent({
 
         const fetchAuctionRecord = async () => {
             try {
+                console.log('start get ownership-info');
                 const response = await axios.get(`http://localhost:8787/contract/ownership-info/${reportId}`);
                 console.log('Response data: ', response.data);
                 hasAuctionRecord.value = response.data.auctionRecord;
@@ -349,6 +393,7 @@ export default defineComponent({
                     seizureCount: 0,
                     provisionalSeizureCount: 0
                 }
+                console.log('end get ownershipInfoDto: ', ownershipInfoDto.value);
 
             } catch (error) {
                 console.error('error fetching auction record:', error);
@@ -381,15 +426,15 @@ export default defineComponent({
             } else if (type === 'landUsage') {
                 landUsage.value = value;
             } else if (type === 'landArea') {
-                landArea.value = value;
+                landArea.value = Number(value);
             } else if (type === 'buildingStructure') {
                 buildingStructure.value = value;
             } else if (type === 'buildingArea') {
-                buildingArea.value = value;
+                buildingArea.value = Number(value);
             } else if (type === 'rentalPortion') {
                 rentalPortion.value = value;
             } else if (type === 'rentalArea') {
-                rentalArea.value = value;
+                rentalArea.value = Number(value);
             }
         };
 
@@ -406,11 +451,11 @@ export default defineComponent({
         };
 
         const handleUnpaidUpdate = (value: string) => {
-            unpaidNationalAndLocalTax.value = value;
+            unpaidNationalAndLocalTax.value = value === '' ? '없음 (임대인 서명 또는 날인)' : value;
         };
 
         const handlePriorityUpdate = (value: string) => {
-            priorityConfirmedDateDetails.value = value;
+            priorityConfirmedDateDetails.value = value === '' ? '없음 (임대인 서명 또는 날인)' : value;
         };
 
         const handleFinancialDateUpdate = ({type, value}: {type: string, value: string}) => {
@@ -442,6 +487,7 @@ export default defineComponent({
         };
 
         return {
+            isContractModalOpen,
             landlordName,
             landlordAddress,
             landlordResidentId,
@@ -468,11 +514,20 @@ export default defineComponent({
             finalPaymentDate,
             managementFee,
             repairDetails,
+            landlordPhone,
+            tenantPhone,
+            agreement,
+            constructionPlan,
+            constructionTime,
+            constructionDuration,
+            addressAgreement,
             hasAuctionRecord,
             hasRegistrationRecord,
             hasTrustRegistrationRecord,
             hasRedemptionRecord,
             hasInjuctionRecord,
+            openContractModal,
+            closeContractModal,
             sendContractData,
             handleInput,
             handlePropertyInput,
