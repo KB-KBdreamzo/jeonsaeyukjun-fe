@@ -3,7 +3,7 @@
     <header
         class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
     >
-      <div class="flex items-center ml-20">
+      <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
         <img
             src="@/assets/logo.png"
             alt="전세역전 로고"
@@ -61,10 +61,11 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import LoginModal from "./components/LoginModal.vue";
 import TermsOfUseModal from "./components/TermsOfUseModal.vue";
+import router from "./router";
 
 const userStore = useUserStore();
 const isModalOpen = ref(false);
@@ -85,6 +86,18 @@ const openTermsOfUseModal = () => {
 const closeTermsOfUseModal = () => {
   isTermsOfUseModalOpen.value = false;
 };
+
+const goToHome = () => {
+  router.push("/");
+};
+
+watch([isModalOpen, isTermsOfUseModalOpen], ([loginOpen, policyOpen]) => {
+  if (loginOpen || policyOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+});
 </script>
 
 <style scoped>
@@ -94,5 +107,13 @@ const closeTermsOfUseModal = () => {
     format("woff2");
   font-weight: normal;
   font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+body.modal-open {
+  overflow: hidden;
 }
 </style>

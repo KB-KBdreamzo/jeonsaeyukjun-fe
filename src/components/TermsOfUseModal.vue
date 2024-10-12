@@ -6,7 +6,7 @@
       @click="closeModal"
     >
       <div
-        class="bg-white rounded-lg shadow-lg max-w-md w-full h-[500px] overflow-y-auto relative"
+        class="bg-white rounded-lg shadow-lg max-w-md w-full h-[500px] relative"
         @click.stop
       >
         <button
@@ -15,58 +15,72 @@
         >
           &times;
         </button>
-        <div class="flex flex-col items-center justify-start h-full p-8">
+        <div class="flex flex-col items-center justify-start h-full p-6">
           <div class="text">
-            <div class="title text-2xl font-bold mb-4">이용약관</div>
+            <div class="title text-2xl font-bold mb-4">전세역전 이용약관</div>
             <div class="con">
-              <div class="modal-body space-y-4">
+              <div
+                class="modal-body border p-4 rounded-md space-y-4 overflow-y-auto max-w-sm h-[300px]"
+              >
                 <h3 class="text-xl font-semibold">제1조 목적</h3>
                 <p>
-                  본 이용약관은 “회사이름”(이하 "사이트")의 서비스의 이용조건과
-                  운영에 관한 제반 사항 규정을 목적으로 합니다.
+                  이 약관은 전세역전(이하 '서비스')의 이용에 관한 사항을
+                  규정하여, 사용자(이하 '이용자')의 권리와 의무를 명확히 하기
+                  위해 마련되었습니다.
                 </p>
 
-                <h3 class="text-xl font-semibold">제2조 용어의 정의</h3>
+                <h3 class="text-xl font-semibold">제2조 수집하는 개인정보</h3>
+                <p>서비스 이용을 위해 다음과 같은 개인정보를 수집합니다.</p>
+                <ol class="list-decimal list-inside">
+                  <li>
+                    <strong>임대인 정보:</strong> 임대인 생년월일, 상세주소,
+                    도로명 주소
+                  </li>
+                  <li><strong>전세금 정보:</strong> 전세금</li>
+                  <li><strong>사용자 정보:</strong> 유저 ID</li>
+                </ol>
+
+                <h3 class="text-xl font-semibold">
+                  제3조 개인정보 보유 및 이용 기간
+                </h3>
                 <p>
-                  본 약관에서 사용되는 주요한 용어의 정의는 다음과 같습니다.
+                  이용자가 서비스 이용을 중단하더라도, 아래의 개인정보는 계속
+                  보관됩니다.
                 </p>
                 <ol class="list-decimal list-inside">
                   <li>
-                    <strong>회원:</strong> 사이트의 약관에 동의하고 개인정보를
-                    제공하여 회원등록을 한 자로서, 사이트와의 이용계약을
-                    체결하고 사이트를 이용하는 이용자를 말합니다.
+                    <strong>임대인 정보</strong>
                   </li>
-                  <li>
-                    <strong>이용계약:</strong> 사이트 이용과 관련하여 사이트와
-                    회원 간에 체결하는 계약을 말합니다.
-                  </li>
-                  <li>
-                    <strong>회원 아이디 (ID):</strong> 회원의 식별과 회원의
-                    서비스 이용을 위하여 회원별로 부여하는 고유한 문자와 숫자의
-                    조합을 말합니다.
-                  </li>
-                  <li>
-                    <strong>비밀번호:</strong> 회원이 부여받은 ID와 일치된
-                    회원임을 확인하고 회원의 권익 보호를 위하여 회원이 선정한
-                    문자와 숫자의 조합을 말합니다.
-                  </li>
-                  <li>
-                    <strong>운영자:</strong> 서비스에 홈페이지를 개설하여
-                    운영하는 운영자를 말합니다.
-                  </li>
-                  <li>
-                    <strong>해지:</strong> 회원이 이용계약을 해약하는 것을
-                    말합니다.
-                  </li>
+                  <li><strong>전세금 정보</strong></li>
+                  <li><strong>사용자 정보</strong></li>
                 </ol>
-
-                <h3 class="text-xl font-semibold">제3조 약관 외 준칙</h3>
                 <p>
-                  운영자는 필요한 경우 별도로 운영정책을 공지 안내할 수 있으며,
-                  본 약관과 운영정책이 중첩될 경우 운영정책이 우선 적용됩니다.
+                  이러한 정보는 서비스의 안전성과 신뢰성을 높이기 위해 필요한
+                  데이터로, 향후 서비스 개선 및 고객 지원에 활용될 수 있습니다.
                 </p>
 
-                <h3 class="text-xl font-semibold">제4조 이용계약 체결</h3>
+                <h3 class="text-xl font-semibold">제4조 개인정보 보호</h3>
+                <p>
+                  이용자의 개인정보는 관련 법령에 따라 안전하게 관리되며,
+                  제3자에게 제공되지 않습니다. 개인정보 보호를 위해 최선을
+                  다하겠습니다.
+                </p>
+                <h3 class="text-xl font-semibold">
+                  제5조 회원 탈퇴 후 개인정보 처리
+                </h3>
+                <p>
+                  이용자가 회원 탈퇴를 하더라도, 서비스의 안전성과 관련된 정보는
+                  계속 보관되며, 이는 법적 의무 또는 서비스의 개선을 위한 목적에
+                  사용될 수 있습니다. 이 점은 서비스 이용 시 반드시 이해해
+                  주시기 바랍니다.
+                </p>
+                <h3 class="text-xl font-semibold">제6조 약관의 변경</h3>
+                <p>
+                  이 약관은 변경될 수 있으며, 변경 시 이용자에게 사전
+                  고지합니다. 변경된 약관에 동의하지 않는 경우, 서비스 이용을
+                  중단할 수 있습니다.
+                </p>
+                <h3 class="text-xl font-semibold">제7조 이용계약 체결</h3>
                 <p>
                   ① 이용계약은 회원으로 등록하여 사이트를 이용하려는 자의 본
                   약관 내용에 대한 동의와 가입신청에 대하여 운영자의
@@ -75,13 +89,10 @@
                   시 본 약관을 읽고 아래에 있는 "동의합니다"를 선택하는 것으로
                   본 약관에 대한 동의 의사 표시를 합니다.
                 </p>
-
-                <!-- 나머지 조항들도 비슷한 형식으로 추가하세요 -->
               </div>
             </div>
           </div>
 
-          <!-- 체크박스 추가 -->
           <div class="flex items-center mt-4">
             <input type="checkbox" id="agree" class="mr-2" v-model="isAgreed" />
             <label for="agree" class="text-gray-700"
@@ -89,8 +100,7 @@
             >
           </div>
 
-          <!-- 버튼 추가 -->
-          <div class="flex space-x-7 mt-8" style="padding-bottom: 30px">
+          <div class="flex space-x-7 mt-4" style="padding-bottom: 30px">
             <button
               class="flex-2 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300"
               @click="goToHomePage"
@@ -105,9 +115,9 @@
                 'flex-2 px-4 py-2 rounded transition duration-300',
               ]"
               :disabled="!isAgreed"
-              @click="isAgreed ? handleKakaoLogin() : null"
+              @click="agreeAndLogin"
             >
-              카카오 로그인
+              동의하고 로그인
             </button>
           </div>
         </div>
@@ -118,57 +128,42 @@
 
 <script setup>
 import router from "@/router";
-import { defineProps, defineEmits, ref } from "vue";
+import { ref, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
-  title: String,
+  userInfo: Object,
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "agree"]);
+
+const isAgreed = ref(false);
 
 const closeModal = () => {
   emit("close");
-};
-
-// 상태 관리
-const isAgreed = ref(false);
-
-// Kakao 로그인 관련 설정
-const KAKAO_CLIENT_ID = "6f6db32df8814c2c64f9b4ba9f9160d4";
-const KAKAO_REDIRECT_URI = "http://localhost:5173/oauth/kakao";
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
-
-const handleKakaoLogin = () => {
-  window.location.href = KAKAO_AUTH_URL;
-};
-
-// 홈페이지로 이동하는 함수 추가
-const goToHomePage = () => {
   router.push("/");
+};
+
+const agreeAndLogin = () => {
+  if (isAgreed.value) {
+    emit("agree", props.userInfo);
+  }
+};
+
+const goToHomePage = () => {
+  isAgreed.value = false;
   closeModal();
 };
 </script>
 
 <style scoped>
-.modal-body {
-  scrollbar-width: thin; /* Firefox에서 스크롤바를 얇게 설정 */
-  scrollbar-color: transparent transparent; /* 스크롤바와 트랙 색상 설정 */
+.border {
+  border: 1px solid #e2e8f0; /* 테두리 색상 */
 }
-
-.modal-body::-webkit-scrollbar {
-  width: 8px; /* 스크롤바의 너비 */
+.p-4 {
+  padding: 16px; /* 패딩 */
 }
-
-.modal-body::-webkit-scrollbar-thumb {
-  background: transparent; /* 스크롤바 색상 */
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-  background: transparent; /* hover 시 색상 */
-}
-
-.modal-body::-webkit-scrollbar-track {
-  background: transparent; /* 스크롤바 트랙 색상 */
+.rounded-md {
+  border-radius: 8px; /* 둥근 모서리 */
 }
 </style>
