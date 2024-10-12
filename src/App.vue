@@ -1,9 +1,3 @@
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-import IconSideBar from "./components/IconSideBar.vue";
-import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 추가
-</script>
-
 <template>
   <div id="app">
     <header
@@ -15,64 +9,90 @@ import SearchBar from "./components/SearchBar.vue"; // 검색창 컴포넌트 �
             alt="전세역전 로고"
             class="w-12 h-12 mr-2"
         />
-        <span class="text-xl font-normal">전세역전</span>
+        <span class="text-xl font-custom">전세역전</span>
       </div>
       <nav class="mr-40">
         <ul class="flex space-x-20">
           <li>
-            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">리포트</a>
+            <router-link to="/report/input" class="text-black font-bold hover:text-gray-300 font-normal">리포트</router-link>
           </li>
           <li>
-            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">지도</a>
+            <router-link to="/map" class="text-black font-bold hover:text-gray-300 font-normal">지도</router-link>
           </li>
           <li>
-            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">계약서</a>
+            <router-link to="/contract" class="text-black font-bold hover:text-gray-300 font-normal">계약서</router-link>
           </li>
           <li>
-            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">예약</a>
+            <router-link to="/agent" class="text-black font-bold hover:text-gray-300 font-normal">공인중개사</router-link>
           </li>
           <li>
-            <a href="#" class="text-black font-bold hover:text-gray-300 font-normal">Login</a>
+            <a
+              v-if="!userStore.isLogin"
+              href="#"
+              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
+              @click.prevent="openModal"
+              >Login</a
+            >
+            <router-link
+              v-else
+              to="/mypage"
+              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
+              >Mypage</router-link
+            >
           </li>
         </ul>
       </nav>
     </header>
 
-    <div class="main-content pt-16">
+    <div class="main-content mt-19.5">
       <router-view />
     </div>
+
+    <LoginModal
+      :isOpen="isModalOpen"
+      @close="closeModal"
+      @kakao-login="openTermsOfUseModal"
+    />
+    <TermsOfUseModal
+      :isOpen="isTermsOfUseModalOpen"
+      @close="closeTermsOfUseModal"
+    />
   </div>
 </template>
 
-<style>
+<script setup>
+import { ref } from "vue";
+import { useUserStore } from "@/stores/userStore";
+import LoginModal from "./components/LoginModal.vue";
+import TermsOfUseModal from "./components/TermsOfUseModal.vue";
 
-html, body, #app {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+const userStore = useUserStore();
+const isModalOpen = ref(false);
+const isTermsOfUseModalOpen = ref(false);
+
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const openTermsOfUseModal = () => {
+  isTermsOfUseModalOpen.value = true;
+};
+
+const closeTermsOfUseModal = () => {
+  isTermsOfUseModalOpen.value = false;
+};
+</script>
+
+<style scoped>
+@font-face {
+  font-family: "WavvePADO-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2404@1.0/WavvePADO-Regular.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-style: normal;
 }
-
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.main-content {
-  flex-grow: 1;
-  padding-top: 65px;
-}
-
-#map-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-#map {
-  width: 100%;
-  height: 100%;
-}
-
 </style>
