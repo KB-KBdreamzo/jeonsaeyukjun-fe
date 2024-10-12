@@ -10,6 +10,7 @@ import AgentBookView from '@/views/Agent/AgentBookView.vue';
 import MypageView from '@/views/mypage/MypageView.vue';
 import MypageReportView from '@/views/mypage/MypageReportView.vue';
 import MypageContractView from '@/views/mypage/MypageContractView.vue';
+import KakaoOauth from "@/components/KakaoOauth.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,6 +65,11 @@ const router = createRouter({
       name: "mypageContract",
       component: MypageContractView,
     },
+    {
+      path: "/oauth/kakao",
+      name: "KakaoOauth",
+      component: KakaoOauth,
+    }
   ],
 });
 export default router
