@@ -2,7 +2,14 @@
     <section class="flex flex-col px-2.5 py-5 mt-10 w-full bg-gray-200 bg-opacity-40 rounded-[30px]">
         <header class="flex gap-10 justify-between items-center px-2.5 w-full text-xl font-semibold leading-tight text-zinc-800">
             <h2 class="self-stretch my-auto w-[152px]">임차주택의 표시</h2>
-            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/418aa1bebc961b980e6f98c975a408ee93fde73ca20753cda4df25836b836210?apiKey=d111ac40a5bb4ce79c76d09fec0749df&" class="object-contain shrink-0 self-stretch my-auto w-8 aspect-square" alt="" />
+            <img loading="lazy"
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/418aa1bebc961b980e6f98c975a408ee93fde73ca20753cda4df25836b836210?apiKey=d111ac40a5bb4ce79c76d09fec0749df&"
+            class="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
+            alt=""
+            @click="openPropertyDescriptionModal"
+            style="cursor: pointer;"
+            />
+            <PropertyDescriptionModal v-if="isPropertyDescriptionModalOpen" @close="closePropertyDescriptionModal" />
         </header>
         <div class="flex flex-col px-1.5 mt-6 w-full">
             <label for="propertyAddress" class="w-full text-base font-bold leading-none text-gray-400 uppercase whitespace-nowrap">
@@ -27,17 +34,19 @@
                 v-model="localLandUsage"
                 @input="updateInput('landUsage', $event)"
                 class="overflow-hidden flex-1 shrink gap-2.5 self-stretch px-4 py-3.5 my-auto bg-white rounded-xl min-h-[50px] text-slate-500 mt-2"
-                placeholder="대"
+                placeholder="대(대지: 건물이 세워진 땅)"
             />
             <div class="flex overflow-hidden flex-1 shrink gap-10 justify-between items-center self-stretch px-4 py-3.5 my-auto whitespace-nowrap bg-white rounded-xl basis-0 min-h-[50px] mt-2">
                 <label for="landArea" class="self-stretch my-auto text-black">면적</label>
                 <input
                     id="landArea"
-                    type="text"
+                    type="number"
                     v-model="localLandArea"
                     @input="updateInput('landArea', $event)"
                     class="self-stretch my-auto text-slate-500 bg-transparent"
                     placeholder="m2"
+                    step="0.01"
+                    min="0"
                 />
             </div>
         </div>
@@ -57,11 +66,13 @@
                 <label for="buildingArea" class="self-stretch my-auto text-black">면적</label>
                 <input
                     id="buildingArea"
-                    type="text"
+                    type="number"
                     v-model="localBuildingArea"
                     @input="updateInput('buildingArea', $event)"
                     class="self-stretch my-auto text-slate-500 bg-transparent"
                     placeholder="m2"
+                    step="0.01"
+                    min="0"
                 />
             </div>
         </div>
@@ -81,11 +92,13 @@
                 <label for="rentalArea" class="self-stretch my-auto text-black">면적</label>
                 <input
                     id="rentalArea"
-                    type="text"
+                    type="number"
                     v-model="localRentalArea"
                     @input="updateInput('rentalArea', $event)"
                     class="self-stretch my-auto text-slate-500 bg-transparent"
                     placeholder="m2"
+                    step="0.01"
+                    min="0"
                 />
             </div>
         </div>
@@ -93,11 +106,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
+import PropertyDescriptionModal from './PropertyDescriptionModal.vue';
 
 export default defineComponent({
     name: 'PropertyDescription',
+    components: {
+        PropertyDescriptionModal
+    },
     props: {
+        isPropertyDescriptionModalOpen: {
+            type: Boolean,
+            default: false
+        },
         propertyAddress: {
             type: String,
             default: ''
@@ -127,45 +148,69 @@ export default defineComponent({
             default: ''
         }
     },
-    data() {
-        return {
-            localPropertyAddress: this.propertyAddress,
-            localLandUsage: this.landUsage,
-            localLandArea: this.landArea,
-            localBuildingStructure: this.buildingStructure,
-            localBuildingArea: this.buildingArea,
-            localRentalPortion: this.rentalPortion,
-            localRentalArea: this.rentalArea
+    setup(props, { emit }) {
+        // Local state
+        const isPropertyDescriptionModalOpen = ref(false);
+
+        const localPropertyAddress = ref(props.propertyAddress);
+        const localLandUsage = ref(props.landUsage);
+        const localLandArea = ref(props.landArea);
+        const localBuildingStructure = ref(props.buildingStructure);
+        const localBuildingArea = ref(props.buildingArea);
+        const localRentalPortion = ref(props.rentalPortion);
+        const localRentalArea = ref(props.rentalArea);
+
+        // Update input and emit change to parent
+        const updateInput = (type: string, event: Event) => {
+            const input = (event.target as HTMLInputElement).value;
+            emit('update-property', type, input);
         };
-    },
-    methods: {
-        updateInput(type, event) {
-            const input = event.target.value;
-            this.$emit('update-property', type, input);
+
+        const openPropertyDescriptionModal = () => {
+            alert("클릭됨");
+            isPropertyDescriptionModalOpen.value = true;
         }
-    },
-    watch: {
-        propertyAddress(newValue) {
-            this.localPropertyAddress = newValue;
-        },
-        landUsage(newValue) {
-            this.localLandUsage = newValue;
-        },
-        landArea(newValue) {
-            this.localLandArea = newValue;
-        },
-        buildingStructure(newValue) {
-            this.localBuildingStructure = newValue;
-        },
-        buildingArea(newValue) {
-            this.localBuildingArea = newValue;
-        },
-        rentalPortion(newValue) {
-            this.localRentalPortion = newValue;
-        },
-        rentalArea(newValue) {
-            this.localRentalArea = newValue;
+
+        const closePropertyDescriptionModal = () => {
+            isPropertyDescriptionModalOpen.value = false;
         }
+
+        // Watch for prop changes and update local state
+        watch(() => props.propertyAddress, (newValue) => {
+            localPropertyAddress.value = newValue;
+        });
+        watch(() => props.landUsage, (newValue) => {
+            localLandUsage.value = newValue;
+        });
+        watch(() => props.landArea, (newValue) => {
+            localLandArea.value = newValue;
+        });
+        watch(() => props.buildingStructure, (newValue) => {
+            localBuildingStructure.value = newValue;
+        });
+        watch(() => props.buildingArea, (newValue) => {
+            localBuildingArea.value = newValue;
+        });
+        watch(() => props.rentalPortion, (newValue) => {
+            localRentalPortion.value = newValue;
+        });
+        watch(() => props.rentalArea, (newValue) => {
+            localRentalArea.value = newValue;
+        });
+
+        return {
+            isPropertyDescriptionModalOpen,
+            localPropertyAddress,
+            localLandUsage,
+            localLandArea,
+            localBuildingStructure,
+            localBuildingArea,
+            localRentalPortion,
+            localRentalArea,
+            openPropertyDescriptionModal,
+            closePropertyDescriptionModal,
+            updateInput
+        };
     }
 });
 </script>

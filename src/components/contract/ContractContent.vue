@@ -26,12 +26,14 @@
             <div class="flex flex-col w-full min-h-[72px] mt-5">
 				<label for="downPayment" class="text-base font-bold leading-none text-gray-400 uppercase">계약금</label>
 				<input
-					type="text"
+					type="number"
 					id="downPayment"
 					v-model="downPayment"
 					@input="updateFinancialInfo('downPayment', $event)"
 					class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-					placeholder="계약금"
+					placeholder="원"
+                    step="1"
+                    min="0"
 				/>
 			</div>
 
@@ -39,12 +41,14 @@
             <div class="flex flex-col w-full min-h-[72px] mt-5">
 				<label for="interimPayment" class="text-base font-bold leading-none text-gray-400 uppercase">중도금</label>
 				<input
-					type="text"
+					type="number"
 					id="interimPayment"
 					v-model="interimPayment"
 					@input="updateFinancialInfo('interimPayment', $event)"
 					class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-					placeholder="중도금"
+					placeholder="원"
+                    step="1"
+                    min="0"
 				/>
 			</div>
 
@@ -62,14 +66,21 @@
             <div class="flex flex-col w-full min-h-[72px] mt-5">
 				<label for="finalPayment" class="text-base font-bold leading-none text-gray-400 uppercase">잔금</label>
 				<input
-					type="text"
+					type="number"
 					id="finalPayment"
 					v-model="finalPayment"
 					@input="updateFinancialInfo('finalPayment', $event)"
 					class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-					placeholder="잔금"
+					placeholder="원"
+                    step="1"
+                    min="0"
 				/>
 			</div>
+
+            <!-- 보증금 확인 메시지 -->
+            <div v-if="depositMessage" class="mt-2 text-red-600">
+                {{ depositMessage }}
+            </div>
 
             <!-- 잔금 지불 날짜 -->
             <div class="flex flex-col mt-2.5 w-full whitespace-nowrap">
@@ -85,12 +96,14 @@
             <div class="flex flex-col w-full min-h-[72px] mt-5">
 				<label for="managementFee" class="text-base font-bold leading-none text-gray-400 uppercase">관리비</label>
 				<input
-					type="text"
+					type="number"
 					id="managementFee"
 					v-model="managementFee"
 					@input="updateFinancialInfo('managementFee', $event)"
 					class="overflow-hidden flex-1 shrink gap-2.5 px-4 py-3 mt-2.5 text-sm font-medium leading-6 bg-white rounded-xl size-full text-slate-500"
-					placeholder="관리비"
+					placeholder="원"
+                    step="1"
+                    min="0"
 				/>
 			</div>
 
@@ -111,13 +124,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import DateInput from './DateInput.vue';
 
 export default defineComponent({
     name: 'ContractContent',
     components: {
         DateInput
+    },
+    props: {
+        depositAmount: {
+            type: Number,
+            required: true
+        }
     },
     setup(props, { emit }) {
         // 상태 관리
@@ -152,7 +171,7 @@ export default defineComponent({
                     emit('update-final-payment-date', {type: 'finalPaymentDate', value: finalPaymentDate})
                     break;
             }
-        }
+        };
 
         // 추가 정보 업데이트 함수
         const updateFinancialInfo = (type: string, event: Event) => {
@@ -179,7 +198,7 @@ export default defineComponent({
                     emit('update-management-fee', {type: 'managementFee', value: managementFee});
                     break;
             }
-        }
+        };
         
         const updateRepairDetails = (type: string, event: Event) => {
             const value = (event.target as HTMLInputElement).value;
@@ -187,8 +206,40 @@ export default defineComponent({
                 repairDetails.value = value;
                 emit('update-repair-details', {type: 'repairDetails', value: repairDetails});
             }
-        }
-        ;
+        };
+
+        // 보증금 확인 메시지 상태
+        const depositMessage = computed(() => {
+            const totalPayments = Number(downPayment.value) + Number(interimPayment.value) + Number(finalPayment.value);
+            console.log(totalPayments, "///", props.depositAmount);
+            return totalPayments !== Number(props.depositAmount) ? '입력한 금액의 합계가 보증금 가격과 일치하지 않습니다. 다시 확인해 주세요.' : '';
+        });
+        
+        // 보증금 체크 함수
+        const validateDeposit = () => {
+            const totalPayments = Number(downPayment.value) + Number(interimPayment.value) + Number(finalPayment.value);
+            if (totalPayments !== props.depositAmount) {
+                // 입력값이 틀렸다고 알림
+                alert('입력한 총 금액이 보증금과 일치하지 않습니다.');
+            }
+        };
+
+        // 각 금액 입력 후 유효성 검사 수행
+        const updateDepositInfo = (type: string, event: Event) => {
+            const value = Number((event.target as HTMLInputElement).value);
+            switch (type) {
+                case 'downPayment':
+                    downPayment.value = value.toString();
+                    break;
+                case 'interimPayment':
+                    interimPayment.value = value.toString();
+                    break;
+                case 'finalPayment':
+                    finalPayment.value = value.toString();
+                    break;
+            }
+            validateDeposit(); // 유효성 검사 호출
+        };
 
         return {
             paymentAccount,
@@ -199,11 +250,14 @@ export default defineComponent({
             finalPaymentDate,
             managementFee,
             repairDetails,
+            depositMessage,
             updateInterimPaymentDate,
             updateFinalPaymentDate,
             updateFinancialDate,
             updateFinancialInfo,
-            updateRepairDetails
+            updateRepairDetails,
+            validateDeposit,
+            updateDepositInfo
         };
     }
 });
