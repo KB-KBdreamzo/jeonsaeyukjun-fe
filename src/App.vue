@@ -1,58 +1,41 @@
 <template>
-  <div id="app">
-    <header
-      class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
-    >
+  <div class="flex flex-col h-screen">
+    <header class="top-0 h-16 w-full flex justify-between items-center p-2 bg-white fixed z-10 border-b">
       <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
-        <img
-          src="@/assets/logo.png"
-          alt="전세역전 로고"
-          class="w-12 h-12 mr-2"
-        />
+        <img src="@/assets/logo.png" alt="전세역전 로고" class="w-12 h-12 mr-2" />
         <span class="text-xl font-custom">전세역전</span>
       </div>
       <nav class="mr-20">
         <ul class="flex space-x-20">
           <li>
-            <a
-              href="#"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >리포트</a
-            >
+            <router-link to="/report/input" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">리포트</router-link>
           </li>
           <li>
-            <a
-              href="#"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >지도</a
-            >
+            <router-link to="/map" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">지도</router-link>
           </li>
           <li>
-            <a
-              href="#"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >계약서</a
-            >
+            <router-link to="/contract" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">계약서</router-link>
+          </li>
+          <li>
+            <router-link to="/agent" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">공인중개사</router-link>
           </li>
           <li>
             <a
               v-if="!userStore.isLogin"
               href="#"
               class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              @click.prevent="openModal"
-              >Login</a
+              @click.prevent="openModal">Login</a
             >
             <router-link
               v-else
               to="/mypage"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              >Mypage</router-link
+              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">Mypage</router-link
             >
           </li>
         </ul>
       </nav>
     </header>
-    <div class="main-content mt-19.5">
+    <div class="flex-1 mt-16 overflow-auto">
       <router-view />
     </div>
     <LoginModal
@@ -66,6 +49,7 @@
     />
   </div>
 </template>
+
 <script setup>
 import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/userStore";
@@ -113,4 +97,8 @@ body {
 body.modal-open {
   overflow: hidden;
 }
+
+/* #app {
+  height: 100vh; 
+} */
 </style>
