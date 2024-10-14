@@ -68,12 +68,12 @@ const router = createRouter({
       path: '/contract', 
       name: 'contract',
       component: () => import('../views/ContractCreation.vue')
-    }
+    },
+    {
       path: "/oauth/kakao",
       name: "kakaoOauth",
       component: KakaoOauth,
     },
-
   ],
 });
 export default router;
