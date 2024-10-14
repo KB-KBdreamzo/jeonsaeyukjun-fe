@@ -11,7 +11,7 @@
       >
         <button
           class="absolute top-4 right-6 bg-transparent border-none text-2xl text-gray-700 cursor-pointer hover:text-red-600"
-          @click="closeModal"
+          @click="goToHomePage"
         >
           &times;
         </button>
@@ -130,11 +130,12 @@
 
 <script setup>
 import router from "@/router";
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, computed, onMounted } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
   userInfo: Object,
+  scrollPosition: Number,
 });
 
 const emit = defineEmits(["close", "agree"]);
@@ -156,6 +157,10 @@ const goToHomePage = () => {
   isAgreed.value = false;
   closeModal();
 };
+
+const modalTopPosition = computed(() => {
+  return props.scrollPosition + 50; // 스크롤 위치 + 50px (원하는 값으로 조정)
+});
 </script>
 
 <style scoped>

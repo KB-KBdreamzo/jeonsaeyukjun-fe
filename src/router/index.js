@@ -1,15 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-
 import AgentView from "@/views/AgentView.vue";
-import ReportInputView from '@/views/report/ReportInputView.vue'
+import ReportInputView from "@/views/report/ReportInputView.vue";
 import ReportResultView from "@/views/report/ReportResultView.vue";
 import MapView from "@/views/MapView.vue";
-import BookingConfirmView from '@/views/Agent/BookingConfirmView.vue';
-import AgentBookView from '@/views/Agent/AgentBookView.vue';
-import MypageView from '@/views/mypage/MypageView.vue';
-import MypageReportView from '@/views/mypage/MypageReportView.vue';
-import MypageContractView from '@/views/mypage/MypageContractView.vue';
+import BookingConfirmView from "@/views/Agent/BookingConfirmView.vue";
+import AgentBookView from "@/views/Agent/AgentBookView.vue";
+import MypageView from "@/views/mypage/MypageView.vue";
+import MypageReportView from "@/views/mypage/MypageReportView.vue";
+import MypageContractView from "@/views/mypage/MypageContractView.vue";
 import KakaoOauth from "@/components/KakaoOauth.vue";
 
 const router = createRouter({
@@ -26,8 +25,8 @@ const router = createRouter({
       component: MapView,
     },
     {
-      path: '/booking-confirm',
-      name: 'BookingConfirmPage',
+      path: "/booking-confirm",
+      name: "BookingConfirmPage",
       component: BookingConfirmView,
     },
     {
@@ -36,18 +35,18 @@ const router = createRouter({
       component: ReportInputView,
     },
     {
-      path: '/report/result/:reportId',
-      name: 'reportResult',
+      path: "/report/result/:reportId",
+      name: "reportResult",
       component: ReportResultView,
     },
     {
-      path: '/agent',
-      name: 'agentPage',
-      component: AgentView
+      path: "/agent",
+      name: "agentPage",
+      component: AgentView,
     },
     {
-      path: '/agent/book',
-      name: 'AgentBookPage',
+      path: "/agent/book",
+      name: "AgentBookPage",
       component: AgentBookView,
     },
     {
@@ -67,9 +66,10 @@ const router = createRouter({
     },
     {
       path: "/oauth/kakao",
-      name: "KakaoOauth",
+      name: "kakaoOauth",
       component: KakaoOauth,
-    }
+    },
+
   ],
 });
-export default router
+export default router;

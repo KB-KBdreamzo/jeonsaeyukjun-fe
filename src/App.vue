@@ -1,4 +1,14 @@
 <template>
+  <div id="app">
+    <header
+      class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
+    >
+      <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
+        <img
+          src="@/assets/logo.png"
+          alt="전세역전 로고"
+          class="w-12 h-12 mr-2"
+        />
   <div class="flex flex-col h-screen">
     <header class="top-0 h-16 w-full flex justify-between items-center p-2 bg-white fixed z-10 border-b">
       <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
@@ -51,15 +61,23 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, provide, readonly } from "vue";
 import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "vue-router";
 import LoginModal from "./components/LoginModal.vue";
 import TermsOfUseModal from "./components/TermsOfUseModal.vue";
 import router from "./router";
 const userStore = useUserStore();
 const isModalOpen = ref(false);
 const isTermsOfUseModalOpen = ref(false);
+const router = useRouter();
+
+const goToHome = () => {
+  router.push("/");
+};
+
 const openModal = () => {
+  window.localStorage.setItem("scrollTop", window.pageYOffset);
   isModalOpen.value = true;
 };
 const closeModal = () => {
@@ -71,16 +89,10 @@ const openTermsOfUseModal = () => {
 const closeTermsOfUseModal = () => {
   isTermsOfUseModalOpen.value = false;
 };
-const goToHome = () => {
-  router.push("/");
-};
-watch([isModalOpen, isTermsOfUseModalOpen], ([loginOpen, policyOpen]) => {
-  if (loginOpen || policyOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-  }
-});
+
+// openModal 함수를 provide
+provide("openModal", openModal);
+
 </script>
 <style scoped>
 @font-face {

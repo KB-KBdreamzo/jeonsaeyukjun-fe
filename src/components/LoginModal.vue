@@ -97,17 +97,13 @@ import { defineProps, defineEmits } from "vue";
 const props = defineProps({
   isOpen: Boolean,
   title: String,
+  scrollPosition: Number,
 });
 
 const emit = defineEmits(["close", "kakao-login"]);
 
 const closeModal = () => {
   emit("close");
-};
-
-const goToHome = () => {
-  closeModal(); // 모달 닫기
-  router.push("/"); // 홈 화면으로 리다이렉트
 };
 
 // Kakao 로그인 관련 설정
