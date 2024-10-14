@@ -9,45 +9,61 @@
           alt="전세역전 로고"
           class="w-12 h-12 mr-2"
         />
-  <div class="flex flex-col h-screen">
-    <header class="top-0 h-16 w-full flex justify-between items-center p-2 bg-white fixed z-10 border-b">
-      <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
-        <img src="@/assets/logo.png" alt="전세역전 로고" class="w-12 h-12 mr-2" />
         <span class="text-xl font-custom">전세역전</span>
       </div>
-      <nav class="mr-20">
+      <nav class="mr-40">
         <ul class="flex space-x-20">
           <li>
-            <router-link to="/report/input" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">리포트</router-link>
+            <router-link
+              to="/report/input"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >리포트</router-link
+            >
           </li>
           <li>
-            <router-link to="/map" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">지도</router-link>
+            <router-link
+              to="/map"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >지도</router-link
+            >
           </li>
           <li>
-            <router-link to="/contract" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">계약서</router-link>
+            <router-link
+              to="/contract"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >계약서</router-link
+            >
           </li>
           <li>
-            <router-link to="/agent" class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">공인중개사</router-link>
+            <router-link
+              to="/agent"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >공인중개사</router-link
+            >
           </li>
           <li>
             <a
               v-if="!userStore.isLogin"
               href="#"
               class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
-              @click.prevent="openModal">Login</a
+              @click.prevent="openModal"
+              >Login</a
             >
             <router-link
               v-else
               to="/mypage"
-              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300">Mypage</router-link
+              class="text-black font-normal hover:bg-gray-200 px-4 py-2 rounded transition duration-300"
+              >Mypage</router-link
             >
           </li>
         </ul>
       </nav>
     </header>
-    <div class="flex-1 mt-16 overflow-auto">
+
+    <div class="main-content mt-19.5">
       <router-view />
     </div>
+
     <LoginModal
       :isOpen="isModalOpen"
       @close="closeModal"
@@ -66,7 +82,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
 import LoginModal from "./components/LoginModal.vue";
 import TermsOfUseModal from "./components/TermsOfUseModal.vue";
-import router from "./router";
+
 const userStore = useUserStore();
 const isModalOpen = ref(false);
 const isTermsOfUseModalOpen = ref(false);
@@ -80,20 +96,23 @@ const openModal = () => {
   window.localStorage.setItem("scrollTop", window.pageYOffset);
   isModalOpen.value = true;
 };
+
 const closeModal = () => {
   isModalOpen.value = false;
 };
+
 const openTermsOfUseModal = () => {
   isTermsOfUseModalOpen.value = true;
 };
+
 const closeTermsOfUseModal = () => {
   isTermsOfUseModalOpen.value = false;
 };
 
 // openModal 함수를 provide
 provide("openModal", openModal);
-
 </script>
+
 <style scoped>
 @font-face {
   font-family: "WavvePADO-Regular";
@@ -102,15 +121,4 @@ provide("openModal", openModal);
   font-weight: normal;
   font-style: normal;
 }
-body {
-  margin: 0;
-  padding: 0;
-}
-body.modal-open {
-  overflow: hidden;
-}
-
-/* #app {
-  height: 100vh; 
-} */
 </style>
