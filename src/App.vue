@@ -1,29 +1,45 @@
 <template>
   <div id="app">
     <header
-        class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
+      class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
     >
-      <div class="flex items-center ml-20">
+      <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
         <img
-            src="@/assets/logo.png"
-            alt="전세역전 로고"
-            class="w-12 h-12 mr-2"
+          src="@/assets/logo.png"
+          alt="전세역전 로고"
+          class="w-12 h-12 mr-2"
         />
         <span class="text-xl font-custom">전세역전</span>
       </div>
       <nav class="mr-40">
         <ul class="flex space-x-20">
           <li>
-            <router-link to="/report/input" class="text-black font-bold hover:text-gray-300 font-normal">리포트</router-link>
+            <router-link
+              to="/report/input"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >리포트</router-link
+            >
           </li>
           <li>
-            <router-link to="/map" class="text-black font-bold hover:text-gray-300 font-normal">지도</router-link>
+            <router-link
+              to="/map"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >지도</router-link
+            >
           </li>
           <li>
-            <router-link to="/contract" class="text-black font-bold hover:text-gray-300 font-normal">계약서</router-link>
+            <router-link
+              to="/contract"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >계약서</router-link
+            >
           </li>
           <li>
-            <router-link to="/agent" class="text-black font-bold hover:text-gray-300 font-normal">공인중개사</router-link>
+            <router-link
+              to="/agent"
+              class="text-black font-bold hover:text-gray-300 font-normal"
+              >공인중개사</router-link
+            >
           </li>
           <li>
             <a
@@ -61,16 +77,23 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, provide, readonly } from "vue";
 import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "vue-router";
 import LoginModal from "./components/LoginModal.vue";
 import TermsOfUseModal from "./components/TermsOfUseModal.vue";
 
 const userStore = useUserStore();
 const isModalOpen = ref(false);
 const isTermsOfUseModalOpen = ref(false);
+const router = useRouter();
+
+const goToHome = () => {
+  router.push("/");
+};
 
 const openModal = () => {
+  window.localStorage.setItem("scrollTop", window.pageYOffset);
   isModalOpen.value = true;
 };
 
@@ -85,6 +108,9 @@ const openTermsOfUseModal = () => {
 const closeTermsOfUseModal = () => {
   isTermsOfUseModalOpen.value = false;
 };
+
+// openModal 함수를 provide
+provide("openModal", openModal);
 </script>
 
 <style scoped>
