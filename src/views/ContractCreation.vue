@@ -1,13 +1,8 @@
 <template>
     <main class="flex h-screen overflow-hidden">
     <!-- flex: 요소를 Flexbox 레이아웃 설정, h-screen: 요소의 높이를 화면 전체 높이(100vh)로 설정, overflow-hidden: 요소가 화면을 벗어나는 내용이 있을 때 이를 숨김(스크롤이 생기지 않음)-->
-
         <!-- Left Side: 계약서 작성 섹션 -->
         <section class="border-gray-300 h-full overflow-y-auto overflow-x-hidden w-[480px] lg:w-[480px] sm:w-full shadow-lg">
-        <!-- border-gray-300: 요소의 테두리 색상을 gray로 설정, h-full: 요소의 높이를 부모 요소(main)의 전체 높이로 설정,
-        overflow-y-auto: 세로 방향으로 넘치는 내용이 있을 때 스크롤 활성화, overflow-x-hidden: 가로 방향으로 넘치는 내용이 있을 때 이를 숨김,
-        w-[480px]: 요소의 너비를 480px로 고정 설정, lg:w-[480px]: 큰 화면(1024px 이상)에서 요소의 너비가 480px로 고정,
-        sm:w-full: 작은 화면(640px 이하)에서 요소의 너비를 100%로 설정-->
             <div class="flex flex-col flex-1 max-w-full w-[378px]">
                 <header class="flex gap-10 items-center py-8 w-full font-bold">
                     <h1 class="self-stretch my-auto text-5xl tracking-tighter leading-none text-zinc-800 max-md:text-4xl whitespace-nowrap">
@@ -71,10 +66,6 @@
         
         <!-- Right Side: Contract Display 섹션 -->
         <section class="flex-1 bg-white h-full overflow-y-auto overflow-x-hidden hidden sm:block">
-        <!-- flex-1: 해당 요소가 부모의 Flex 컨테이너 내에서 가용 가능한 공간을 차지하도록 설정, bg-white: 배경색을 흰색으로 설정
-        h-full: 높이를 부모 요소의 높이와 동일하게 설정, overflow-y-auto: 세로 방향에서 내용이 냄칠 경우 스크롤이 자동으로 나타나도록 설정
-        overflow-x-hidden: 가로 방향에서 내용이 넘칠 경우 숨기도록 설정, hidden: 기본적으로 이 섹션을 숨김
-        sm:block: 작은 화면(640px 이상)일 때 이 섹션을 보이도록 설정-->
             <div class="sticky top-0 bg-white z-10 border-b border-gray-300 overflow-y-auto h-full">
             <!-- LandlordTenantInfo의 이름을 ContractDisplay에 전달 -->
             <ContractDisplay 
@@ -122,6 +113,7 @@
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, toRaw } from 'vue';
+import { useRoute } from 'vue-router';
 import axios from 'axios';
 import ContractModal from '@/components/contract/ContractModal.vue'
 import LandlordTenantInfo from '@/components/contract/LandlordTenantInfo.vue';
@@ -182,7 +174,9 @@ export default defineComponent({
         const constructionDuration = ref(0);
         const addressAgreement = ref('');
 
-        const reportId = 1;
+        const route = useRoute();
+        const reportId = route.params.reportId || 0;
+
         const hasAuctionRecord = ref(false); // 경매 넘어간 횟수 기록 여부
         const hasRegistrationRecord = ref(false); // 소유권이전청구권가등기 기록 여부
         const hasTrustRegistrationRecord = ref(false); // 신탁 등기 기록 여부
@@ -190,6 +184,11 @@ export default defineComponent({
         const hasInjuctionRecord = ref(false); // 가처분 내역 기록 여부
 
         const ownershipInfoDto = ref({});
+
+        const today = new Date();            
+        const year = today.getFullYear();    
+        const month = today.getMonth() + 1;  
+        const day = today.getDate();         
 
         const firstContractDto = ref({
             landlordName: landlordName.value,
@@ -229,9 +228,9 @@ export default defineComponent({
             landlordResidentId: landlordResidentId.value,
             tenantAddress: tenantAddress.value,
             tenantResidentId: tenantResidentId.value,
-            todayYear: '',
-            todayMonth: '',
-            todayDay: '',
+            todayYear: year,
+            todayMonth: month,
+            todayDay: day,
             landlordPhone: '010 - _ _ _ _ - _ _ _ _',
             tenantPhone: '010 - _ _ _ _ - _ _ _ _'
         });
@@ -281,33 +280,19 @@ export default defineComponent({
             firstContractDto.value.finalDay = day;
         };
         const setTodayDateDto = () => {
-            // 날짜 형식이 'YYYY-MM-DD'라고 가정하고 나누기
-            const today = new Date();
-            const year = today.getFullYear(); // 연도
-            const month = today.getMonth() + 1; // 월 (0부터 시작하므로 1 더해줌)
-            const day = today.getDate(); // 일
-
             // contractDto에 할당
             firstContractDto.value.todayYear = year;
             firstContractDto.value.todayMonth = month;
             firstContractDto.value.todayDay = day;
         };
-        // 함수들
+        
         const sendContractData = () => {
             updateLeasedStartDto();
             updateLeasedEndDto();
             updateInterimDateDto();
             updatefinalDateDto();
             setTodayDateDto();
-            // const contractDto = {
-            //     landlordName: landlordName.value,
-            //     tenantName: tenantName.value,
-            // }
 
-            // const requestData = {
-            //     contractDto,
-            //     ownershipInfoDto: ownershipInfoDto.value
-            // }
             console.log('paymentAccount: ', landArea.value);
             console.log('landlordName: ', landlordName.value);
             const requestData = {
@@ -331,19 +316,19 @@ export default defineComponent({
                     unpaidNationalAndLocalTax: unpaidNationalAndLocalTax.value,
                     priorityConfirmedDateDetails: priorityConfirmedDateDetails.value,
                     contractConfirmationDate: contractConfirmationDate.value,
-                    paymentAccount: paymentAccount.value._rawValue,
+                    paymentAccount: paymentAccount.value.valueOf,
                     depositAmount: depositAmount.value,
-                    downPayment: downPayment.value._rawValue,
-                    interimPayment: interimPayment.value._rawValue,
+                    downPayment: downPayment.value.valueOf,
+                    interimPayment: interimPayment.value.valueOf,
                     interYear: firstContractDto.value.interYear,
                     interMonth: firstContractDto.value.interMonth,
                     interDay: firstContractDto.value.interDay,
-                    finalPayment: finalPayment.value._rawValue,
+                    finalPayment: finalPayment.value.valueOf,
                     finalYear: firstContractDto.value.finalYear,
                     finalMonth: firstContractDto.value.finalMonth,
                     finalDay: firstContractDto.value.finalDay,
-                    managementFee: managementFee.value._rawValue,
-                    repairDetails: repairDetails.value._rawValue,
+                    managementFee: managementFee.value.valueOf,
+                    repairDetails: repairDetails.value.valueOf,
                     taxAmount: depositAmount.value / 10,
                     landlordAddress: landlordAddress.value,
                     landlordResidentId: landlordResidentId.value,
@@ -355,10 +340,10 @@ export default defineComponent({
                     landlordPhone: landlordPhone.value,
                     tenantPhone: tenantPhone.value
                 },
-                ownershipInfoDto: ownershipInfoDto.value,
+                ownershipInfoDto: reportId !== 0 ? ownershipInfoDto.value : null
             };
             console.log('ownershipInfoData.value: ', ownershipInfoDto.value);
-            axios.post('http://localhost:8787/contract/generate', requestData)
+            axios.post('http://localhost:8080/api/contract/generate', requestData)
                 .then(response => {
                     console.log('성공적으로 보냈습니다:', response.data);
                 })
@@ -369,8 +354,13 @@ export default defineComponent({
 
         const fetchAuctionRecord = async () => {
             try {
+                if (reportId == 0) {
+                    console.log("reportId가 0이므로 GET 요청을 생략합니다.");
+                    return; // reportId가 0이면 API 호출 생략
+                }
+                
                 console.log('start get ownership-info');
-                const response = await axios.get(`http://localhost:8787/contract/ownership-info/${reportId}`);
+                const response = await axios.get(`http://localhost:8080/api/contract/ownership-info/${reportId}`);
                 console.log('Response data: ', response.data);
                 hasAuctionRecord.value = response.data.auctionRecord;
                 hasRegistrationRecord.value = response.data.registrationRecord;
