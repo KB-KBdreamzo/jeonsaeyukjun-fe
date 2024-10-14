@@ -139,6 +139,7 @@
 import axios from "axios";
 import { ref, onMounted, defineProps } from "vue";
 import { useRouter } from "vue-router";
+
 import { useUserStore } from "@/stores/userStore";
 import TermsOfUseModal from "@/components/TermsOfUseModal.vue";
 
@@ -266,6 +267,7 @@ const loginUser = async (userData) => {
     userStore.setUser(loggedUser);
 
     console.log("userStore 에 저장 된 사용자 정보 : ", userStore.getUser());
+
 
     // 추가 API 호출
     const testResponse = await axios.post(

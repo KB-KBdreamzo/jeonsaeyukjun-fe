@@ -69,6 +69,7 @@ const router = createRouter({
       name: "kakaoOauth",
       component: KakaoOauth,
     },
+
   ],
 });
 export default router;
