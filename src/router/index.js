@@ -65,6 +65,10 @@ const router = createRouter({
       component: MypageContractView,
     },
     {
+      path: '/contract', 
+      name: 'contract',
+      component: () => import('../views/ContractCreation.vue')
+    }
       path: "/oauth/kakao",
       name: "kakaoOauth",
       component: KakaoOauth,
