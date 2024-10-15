@@ -23,8 +23,11 @@
             <img src="/src/assets/search.png" class="h-6 w-6">
           </button>
         </div>
+        
+        <span v-if="showResults && !addressStore.addressResults.length" class="text-sm text-red-500 mt-1">
+          검색 결과가 없습니다. 다른 주소를 입력해주세요.
+        </span>
 
-        <!-- 절대 위치를 사용해 ul 리스트를 input 바로 아래에 표시 -->
         <ul
           v-if="showResults && addressStore.addressResults.length"
           class="absolute left-0 w-full bg-white border border-gray-300 max-h-48 overflow-y-auto mt-2 z-10"
@@ -128,7 +131,7 @@ const showResults = ref(false);
 const detailedAddress = ref('');
 const deposit = ref(0);
 const uploadedFile = ref(null);
-const isFileLoading = ref(false); // 로딩 상태 관리 변수
+const isFileLoading = ref(false); 
 const canAddReport = ref(false);
 const isReportLoading = ref(false);
 
@@ -170,7 +173,7 @@ const confirmFile = async () => {
     } catch (error) {
       console.error("파일 확인 중 오류:", error);
     } finally {
-      isFileLoading.value = false; // 로딩 완료
+      isFileLoading.value = false; 
     }
   }
 };
