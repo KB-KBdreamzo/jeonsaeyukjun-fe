@@ -73,7 +73,7 @@
             <td class="p-4">{{ report.deposit.toLocaleString() }}</td>
             <td class="p-4">
               <span
-                class="px-4 py-1.5 rounded-full text-white"
+                class="px-4 py-1.5 rounded-full"
                 :class="getStatusClass(report.status)"
               >
                 {{ report.status }}
@@ -145,10 +145,12 @@ const sortButtonText = computed(() => {
 });
 
 const getStatusClass = (status) => {
-  if (status === '안전') return 'bg-green-400';
-  if (status === '양호' || status === '보통') return 'bg-yellow-300';
-  if (status === '위험' || status === '주의') return 'bg-red-400';
-  return 'bg-gray-300';
+  if (status === '안전') return 'bg-badge-bg-blue text-badge-txt-blue';
+  if (status === '양호') return 'bg-badge-bg-green text-badge-txt-green';
+  if (status === '보통') return 'bg-badge-bg-yellow text-badge-txt-yellow';
+  if (status === '주의') return 'bg-badge-bg-orange text-badge-txt-orange';
+  if (status === '위험') return 'bg-badge-bg-red text-badge-txt-red';
+  return 'bg-badge-bg-no text-badge-txt-no';
 };
 
 const calculateStatus = (safetyScore) => {
@@ -168,6 +170,9 @@ const fetchReportLists = async() => {
         sortKey: sortKey.value,
         query: searchQuery.value,
       },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
     });
     reportList.value = reportResponse.data.reports.map((report) => ({
       ...report,
@@ -201,7 +206,11 @@ const deleteReport = async (index) => {
     return;
   }
   try {
-    await axios.delete(`http://localhost:8080/api/report/${userId}/${reportId}`);
+    await axios.delete(`http://localhost:8080/api/report/${userId}/${reportId}`,{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
+    });
     await fetchReportLists();
     alert("리포트가 삭제되었습니다.");
   } catch (error) {

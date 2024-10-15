@@ -1,37 +1,47 @@
 <template>
   <!-- 상단 주소 표시 영역 -->
-  <h1 class="text-2xl text-center font-bold mt-10">
-    {{ reportStore.reportData.registerDto.roadName }}의 보증금 리포트
-  </h1>
+  <div class="flex flex-row justify-center gap-14 mt-10">
+    <button @click="goBack" class="absolute left-60">
+      <img src="/src/assets/back.jpg" alt="back" class="w-10 h-10" />
+    </button>
+    <h1 class="text-2xl text-center font-bold">
+      {{ reportStore.reportData.registerDto.roadName }}의 보증금 리포트
+    </h1>
+    
+  </div>
 
   <div class="w-full bg-gray-100 p-5 rounded-3xl mx-auto">
-    <div
-      class="relative text-center bg-white rounded-lg my-5 transition-all duration-300 ease-in-out"
-      :class="expanded ? 'h-auto' : 'h-32 overflow-hidden'"
+    <div class="accordion w-full bg-white p-5 rounded-3xl mx-auto transition-all duration-500">
+    <button 
+      @click="toggleExpand" 
+      class="accordion-toggle group inline-flex items-center justify-center leading-8 text-gray-900 w-full transition duration-500  hover:text-gray-600"
+      aria-controls="basic-collapse-one-with-arrow"
     >
-      <div class="flex justify-center items-center h-full">
-        <div class="text-lg">
-          해당 집의 종합 보증금 안전 진단 결과 {{ safetyStatus }}입니다.
-          <br />
-          예측 손실액은 {{ estimatedLoss }}원이며, 위험 진단 요소는 {{ riskFactor }}건입니다.
-        </div>
+      <div class="text-lg">
+        해당 집의 종합 보증금 안전 진단 결과 {{ safetyStatus }}입니다.
+        <br />
+        예측 손실액은 {{ estimatedLoss.toLocaleString() }}, 위험 진단 요소는 {{ riskFactor }}건입니다.
       </div>
-
-      <div v-if="expanded" class="mt-4 text-sm text-gray-700">
-        해당 집의 보증금 안전 점수는 {{ reportStore.reportData.safetyScore }}점입니다. <br />
-        안전 점수는 ~~~~를 기반으로 산출되었습니다.<br />
-        위험 진단 요소로는 선순위 채권, 예상 경매 낙찰가, 경매 건수 등이 포함됩니다. <br />
-        리포트의 자세한 정보를 보려면 아래 상세 보고서를 참고하세요.
-      </div>
-
-      <button
-        class="absolute top-3 right-3 text-xl text-gray-300 hover:text-gray-400 transition-transform transform focus:outline-none"
-        @click="toggleExpand"
-        :style="{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }"
+      <svg 
+        class="absolute right-80 text-gray-900 transition duration-500 group-hover:text-gray-600" 
+        :class="{'rotate-180': expanded}" 
+        width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"
       >
-        ▼
-      </button>
+        <path d="M16.5 8.25L12.4142 12.3358C11.7475 13.0025 11.4142 13.3358 11 13.3358C10.5858 13.3358 10.2525 13.0025 9.58579 12.3358L5.5 8.25" 
+          stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+    <div 
+      class="accordion-content flex flex-col items-center justify-center w-full px-10 overflow-hidden transition-all duration-500" >
+      <div v-if="expanded" class="flex flex-col gap-2 mt-6 text-center text-gray-700">
+        <div class="font-semibold"> 해당 집의 보증금 안전 점수는 {{ reportStore.reportData.safetyScore }}점입니다. </div>
+        <div> 리포트는 사용자가 조회한 전세금과 등기부등본을 기반으로 다양한 위험 요소들을 평가한 결과를 제시합니다.</div> 
+        <div> 위험 요소에는 환불 가능한 보증금, 임대인의 정보, 기타 권리사항, 소유권 침해내역등이 있습니다. </div>
+        <div> 리포트의 자세한 정보를 보려면 아래 상세 보고서를 참고하세요.</div>
+      </div>
     </div>
+  </div>
 
     <div class="flex flex-col md:flex-row justify-between items-start px-5 pt-10 pb-10">
       <!-- 좌측: 보증금 안전 상태 -->
@@ -93,27 +103,34 @@
 </template>
 
 <script setup>
-import { ref } from "vue"; // 여기서 computed를 추가해야 함
+import { ref } from "vue"; 
 import { computed } from 'vue';
 import { useReportStore } from "@/stores/reportStore";
+import { useRouter } from 'vue-router';  
+
+const router = useRouter();
 
 const reportStore = useReportStore();
 const expanded = ref(false);
 
+const goBack = () => router.back();
+
+const toggleExpand = () => expanded.value = !expanded.value;
+
 const safetyStatus = computed(() => {
   const score = reportStore.reportData.safetyScore 
-  if (score >= 80) { return '안전';
-  } else if (score >= 60) { return '양호';
-  } else if (score >= 40) { return '보통';
-  } else if (score >= 20) { return '주의';
-  } else { return '위험';
-  }
+  if (score >= 80)  return '안전';
+  else if (score >= 60)  return '양호';
+  else if (score >= 40)  return '보통';
+  else if (score >= 20)  return '주의';
+  else  return '위험';
 });
 
 const estimatedLoss = computed(() => {
+  if (reportStore.reportData.nowPrice < 0) return '알 수 없으며';
   const loss = parseInt( reportStore.reportData.nowPrice * reportStore.reportData.salePriceRatio /100) 
                 - reportStore.reportData.registerDto.priorityDeposit - reportStore.reportData.deposit
-  return loss > 0 ? 0 : -loss
+  return loss > 0 ? 0 : (-loss).toLocaleString() + " 원 이며"
 });
 
 const riskFactor = computed(() => {
@@ -130,8 +147,4 @@ const riskFactor = computed(() => {
   if (reportStore.reportData.registerDto.mortgageCount > 0) count++;
   return count; 
 });
-
-const toggleExpand = () => {
-  expanded.value = !expanded.value;
-};
 </script>
