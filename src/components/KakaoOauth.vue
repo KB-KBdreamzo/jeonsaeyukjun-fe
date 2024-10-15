@@ -282,7 +282,7 @@ const loginUser = async (userData) => {
 
     console.log(testResponse.data);
 
-    router.push("/report");
+    router.push("/report/input");
   } catch (error) {
     error.value = "카카오 로그인에 실패했습니다.";
     console.error("Login error:", error);
