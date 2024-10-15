@@ -47,7 +47,7 @@
             >
               <span>{{ report.roadName + report.detailAddress }}</span>
               <span
-                class="px-4 py-1 rounded-full text-white ml-auto"
+                class="px-4 py-1 rounded-full ml-auto"
                 :class="getStatusClass(report.status)"
               >
                 {{ report.status }}
