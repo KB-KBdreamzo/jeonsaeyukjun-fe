@@ -12,7 +12,8 @@ import MypageContractView from "@/views/mypage/MypageContractView.vue";
 import KakaoOauth from "@/components/KakaoOauth.vue";
 import PdfViewer from '@/views/mypage/PdfViewer.vue';
 import { useUserStore } from "@/stores/userStore";
-
+import { useUserStore } from "@/stores/userStore";
+import NotFoundView from "@/views/NotFoundView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,7 +69,7 @@ const router = createRouter({
       component: MypageContractView,
     },
     {
-      path: '/contract', 
+      path: '/contract/:reportId', 
       name: 'contract',
       component: () => import('../views/ContractCreation.vue')
     },
@@ -82,6 +83,11 @@ const router = createRouter({
       name: 'PdfViewer',
       component: PdfViewer,
       props: true 
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFoundView,
     }
   ],
 });

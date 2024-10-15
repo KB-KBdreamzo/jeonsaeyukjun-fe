@@ -118,6 +118,11 @@ const viewContract = (contract) => {
 };
 
 
+onMounted(()=>{
+  username.value = userStore.username;
+  email.value = userStore.email;
+});
+
 const getStatusClass = (status) => {
   if (status === '안전') return 'bg-badge-bg-blue text-badge-txt-blue';
   if (status === '양호') return 'bg-badge-bg-green text-badge-txt-green';
