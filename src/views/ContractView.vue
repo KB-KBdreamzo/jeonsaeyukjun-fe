@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="flex justify-between">
       <!-- Left Side: User Input Form -->
-      <div class="w-1/2 p-4 bg-gray-100">
+      <div class="w-1/2 p-4 bg-gray-100 z-20">
         <h2 class="text-lg font-bold mb-4">사용자 입력</h2>
 
         <!-- 임대인 및 임차인 박스 -->
@@ -33,7 +33,7 @@
     </div>
   
       <!-- Right Side: Real-time Contract Display -->
-      <div class="w-1/2 p-4 border border-gray-300">
+      <div class="w-1/2 p-4 border border-gray-300 z-10">
         <h2 class="text-xl font-bold mb-4 text-center">주택임대차표준계약서(전세)</h2>
         <div v-if="landlordName || tenantName" class="text-center">
           <p>임대인({{ landlordName || "______" }})와(과) 임차인({{ tenantName || "______" }})은(는) 아래와 같이 임대차 계약을 체결한다.</p>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header
-      class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-10 border-b"
+      class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-50 border-b"
     >
       <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
         <img
