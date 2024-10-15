@@ -1,8 +1,14 @@
 <template>
   <!-- 상단 주소 표시 영역 -->
-  <h1 class="text-2xl text-center font-bold mt-10">
-    {{ reportStore.reportData.registerDto.roadName }}의 보증금 리포트
-  </h1>
+  <div class="flex flex-row justify-center gap-14 mt-10">
+    <button @click="goBack" class="flex items-center justify-center">
+      <img src="/src/assets/back.jpg" alt="back" class="w-10 h-10" />
+    </button>
+    <h1 class="text-2xl text-center font-bold">
+      {{ reportStore.reportData.registerDto.roadName }}의 보증금 리포트
+    </h1>
+    
+  </div>
 
   <div class="w-full bg-gray-100 p-5 rounded-3xl mx-auto">
     <div
@@ -93,12 +99,17 @@
 </template>
 
 <script setup>
-import { ref } from "vue"; // 여기서 computed를 추가해야 함
+import { ref } from "vue"; 
 import { computed } from 'vue';
 import { useReportStore } from "@/stores/reportStore";
+import { useRouter } from 'vue-router';  
+
+const router = useRouter();
 
 const reportStore = useReportStore();
 const expanded = ref(false);
+
+const goBack = () => router.back();
 
 const safetyStatus = computed(() => {
   const score = reportStore.reportData.safetyScore 
