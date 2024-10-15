@@ -2,7 +2,13 @@
     <section class="flex flex-col px-2.5 py-5 mt-10 w-full bg-gray-200 bg-opacity-40 rounded-[30px]">
         <header class="flex gap-10 justify-between items-center px-2.5 w-full text-xl font-semibold leading-tight text-zinc-800">
             <h2 class="self-stretch my-auto">특약 사항</h2>
-            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/418aa1bebc961b980e6f98c975a408ee93fde73ca20753cda4df25836b836210?apiKey=d111ac40a5bb4ce79c76d09fec0749df&" alt="" class="object-contain shrink-0 self-stretch my-auto w-8 aspect-square" />
+            <img 
+                loading="lazy" 
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/418aa1bebc961b980e6f98c975a408ee93fde73ca20753cda4df25836b836210?apiKey=d111ac40a5bb4ce79c76d09fec0749df&" 
+                alt="" 
+                class="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
+                @click="openModal"  
+            />
         </header>
         <div class="flex flex-col px-1.5 mt-6 w-full">
 
@@ -74,58 +80,28 @@
             </div>
 
         </div>
+
+        <SpecialContractModal v-if="isModalOpen" @close="closeModal" />
     </section>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+<script setup>
+import { ref } from 'vue';
+import SpecialContractModal from './SpecialContractModal.vue'; 
 
-export default {
-    setup() {
-        // 상태 관리
-        const agreement = ref('');      // 동의/미동의 선택 값
-        const constructionPlan = ref(''); // 철거 또는 재건축 계획 여부
-        const constructionTime = ref(''); // 공사 시기
-        const constructionDuration = ref(''); // 소요 기간
-        const addressAgreement = ref(''); // 상세주소 부여 신청 동의 여부
-        const hasAuctionRecord = ref(false); // 경매 기록 여부
-        const hasRegistrationRecord = ref(false); // 소유권이전청구권가등기 기록 여부
-        const reportId = 1;
-        const specialTerms = ref(''); // 계약서에 작성할 특약 사항
+// 상태 관리
+const agreement = ref('');
+const constructionPlan = ref('');
+const constructionTime = ref('');
+const constructionDuration = ref('');
+const addressAgreement = ref('');
+const isModalOpen = ref(false); 
 
-        // DB에서 auction_record 값 가져오기
-        // const fetchAuctionRecord = async () => {
-        //     try {
-        //         const response = await axios.get(`http://localhost:8787/contract/ownership-info/${reportId}`);
-        //         console.log('Response data: ', response.data);
-        //         hasAuctionRecord.value = response.data.auctionRecord; // 서버에서 반환한 값에 맞게 수정
-        //         hasRegistrationRecord.value = response.data.registrationRecord;
-        //         console.log('hasAuctionRecord.value: ', hasAuctionRecord.value);
-        //     } catch (error) {
-        //         console.error('Error fetching auction record:', error);
-        //     }
-        // };
+const openModal = () => {
+    isModalOpen.value = true;
+};
 
-        // // 컴포넌트가 마운트될 때 데이터 가져오기
-        // onMounted(() => {
-        //     fetchAuctionRecord();
-        // });
-
-        return {
-            agreement,
-            constructionPlan,
-            constructionTime,
-            constructionDuration,
-            addressAgreement,
-            hasAuctionRecord,
-            hasRegistrationRecord,
-            specialTerms
-        };
-    },
+const closeModal = () => {
+    isModalOpen.value = false;
 };
 </script>
-
-<style scoped>
-/* 추가적인 스타일이 필요하면 여기에 작성 */
-</style>
