@@ -18,6 +18,12 @@
           <p class="text-gray-600 mt-2">yundabin0608@naver.com</p>
         </div>
       </div>
+      <button
+        @click="logout"
+        class="border bg-gray-800 text-white px-4 py-1 rounded-full hover:bg-gray-300"
+      >
+        Logout
+      </button>
     </div>
 
     <div class="flex justify-between space-x-16 mx-2">
@@ -84,9 +90,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/userStore";
 
+const router = useRouter();
+const userStore = useUserStore();
 const reportList = ref([]);
 const contractList = ref([
   { address: "강서구 방화대로47가길 22" },
@@ -95,10 +105,10 @@ const contractList = ref([
 ]);
 
 const getStatusClass = (status) => {
-  if (status === "안전") return "bg-green-400"; 
-  if (status === "양호" || status === "보통") return "bg-yellow-300"; 
-  if (status === "위험" || status === "주의") return "bg-red-400"; 
-  return "bg-gray-300"; 
+  if (status === "안전") return "bg-green-400";
+  if (status === "양호" || status === "보통") return "bg-yellow-300";
+  if (status === "위험" || status === "주의") return "bg-red-400";
+  return "bg-gray-300";
 };
 
 const calculateStatus = (safetyScore) => {
@@ -119,11 +129,24 @@ const fetchReports = async (userId) => {
         }
       });
     reportList.value = reportResponse.data.reports.map((report) => ({
-      ...report, 
-      status: calculateStatus(report.safetyScore), 
+      ...report,
+      status: calculateStatus(report.safetyScore),
     }));
   } catch (error) {
     console.error("데이터를 불러오는 중 오류 발생:", error);
+  }
+};
+
+const logout = async () => {
+  try {
+    // 로그아웃 API 호출
+    await axios.post("http://localhost:8080/api/login/logout");
+
+    userStore.clearUser();
+    console.log("userStore.getUser() : ", userStore.getUser());
+    router.push("/");
+  } catch (error) {
+    console.error("로그아웃 중 오류 발생:", error);
   }
 };
 
@@ -132,6 +155,6 @@ fetchReports("1");
 
 <style scoped>
 .container {
-  width: 80%; 
+  width: 80%;
 }
 </style>
