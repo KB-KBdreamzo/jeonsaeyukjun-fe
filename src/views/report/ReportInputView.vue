@@ -167,7 +167,6 @@ const confirmFile = async () => {
     try {
       await registerStore.fetchRegister(uploadedFile.value);
       checkValidation();
-      console.log(registerStore.registerData)
     } catch (error) {
       console.error("파일 확인 중 오류:", error);
     } finally {
