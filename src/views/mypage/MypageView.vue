@@ -75,8 +75,9 @@
               :key="index"
               class="flex justify-between items-center py-4 bg-white border-b border-gray-200"
             >
-              <span>{{ contract.address }}</span>
+              <span>{{ contract.reportAddress }}</span>
               <button
+                @click="viewContract(contract)"
                 class="text-gray-500 px-4 py-1 rounded-full hover:bg-gray-100 bg-buttonBeige"
               >
                 확인
@@ -100,11 +101,22 @@ const email = ref("")
 const router = useRouter();
 const userStore = useUserStore();
 const reportList = ref([]);
-const contractList = ref([
-  { address: "강서구 방화대로47가길 22" },
-  { address: "강서구 양천로26길 24-10" },
-  { address: "강서구 방화대로 351" },
-]);
+const contractList = ref([]);
+
+onMounted(()=>{
+  username.value = userStore.username;
+  email.value = userStore.email;
+
+  fetchContracts(userStore.getUser().userId);
+});
+
+const viewContract = (contract) => {
+  router.push({
+    name: 'PdfViewer',
+    params: { contractName: contract.contractName },
+  });
+};
+
 
 onMounted(()=>{
   username.value = userStore.username;
@@ -146,6 +158,20 @@ const fetchReports = async (userId) => {
   }
 };
 
+const fetchContracts = async (userId) => {
+  try {
+    const contractResponse = await axios.get(
+      `http://localhost:8080/api/contract/list/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+    contractList.value = contractResponse.data; 
+  } catch (error) {
+    console.error("계약서 데이터를 불러오는 중 오류 발생:", error);
+  }
+};
+
 const logout = async () => {
   try {
     // 로그아웃 API 호출
@@ -164,6 +190,7 @@ const logout = async () => {
 };
 
 fetchReports("1");
+fetchContracts("1");
 </script>
 
 <style scoped>
