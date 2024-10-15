@@ -78,7 +78,7 @@
                 확인
               </button>
               <button
-                @click="deleteContract(index)"
+                @click="deleteContract(contract, index)"
                 class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-300"
               >
                 삭제
@@ -130,6 +130,25 @@ const viewContract = (contract) => {
     name: 'PdfViewer',
     params: { contractName: contract.contractName },
   });
+};
+
+const deleteContract = async (contract, index) => {
+  try {
+    const confirmed = confirm("정말로 이 계약서를 삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    await axios.delete(`http://localhost:8080/api/contract/delete`, {
+      data: {
+        userId: userId,
+        contractName: contract.contractName
+      }
+    });
+
+    await fetchContracts(userId);
+
+  } catch (error) {
+    console.error("계약서 삭제 중 오류 발생:", error);
+  }
 };
 
 // 계약서 목록 반환

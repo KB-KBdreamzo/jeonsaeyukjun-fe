@@ -4,25 +4,24 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
+  import { ref, onMounted } from 'vue';
   import axios from 'axios';
+  import { useRoute } from 'vue-router';
   
-  export default {
-    props: ['contractName'], 
-    data() {
-      return {
-        pdfUrl: ''
-      };
-    },
-    async mounted() {
-      try {
-        const response = await axios.get(`http://localhost:8080/api/contract/presigned-url/${this.contractName}`);
-        this.pdfUrl = response.data;
-      } catch (error) {
-        console.error('Error fetching presigned URL:', error);
-      }
+  const route = useRoute();
+  const contractName = route.params.contractName; 
+  
+  const pdfUrl = ref('');
+  
+  onMounted(async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/contract/presigned-url/${contractName}`);
+      pdfUrl.value = response.data; 
+    } catch (error) {
+      console.error('Error fetching presigned URL:', error);
     }
-  };
+  });
   </script>
   
   <style scoped>
