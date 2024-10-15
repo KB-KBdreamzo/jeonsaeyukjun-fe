@@ -26,7 +26,7 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useReportStore } from "@/stores/reportStore";
 import { useUserStore } from '@/stores/userStore';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import LandlordInfo from "@/components/report/LandlordInfo.vue"
 import OwnershipInfo from "@/components/report/OwnershipInfo.vue";
@@ -38,6 +38,7 @@ const reportStore = useReportStore();
 const userStore = useUserStore();
 
 const route = useRoute();
+const router = useRouter();
 const userId = userStore.userId; 
 const isReportLoading = ref(false);
 const reportId = ref("");
@@ -65,16 +66,10 @@ const fetchReport = async () => {
 
 const addContract = async () => {
   try {
-    const response = await axios.post(`http://localhost:8080/api/contract/generate`, {
-      params: {
-        reportId : reportId.value 
-      },
-      headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token")}`
-        }
-      }
-    );
-    reportStore.reportData = response.data; 
+    router.push({ 
+      name: 'contract', 
+      params: { reportId: reportId.value } 
+    });
   } catch (error) {
     console.error("계약서 생성 중 오류 발생:", error);
   }

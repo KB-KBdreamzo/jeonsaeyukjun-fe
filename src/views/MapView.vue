@@ -278,7 +278,7 @@ const createTextOverlay = (latitude, longitude, address, text, color) => {
   const content = `
     <div class="flex items-center rounded-full shadow-lg overflow-hidden" style="opacity: 0.9;">
       <div class="text-gray-800 font-bold py-1 px-2" style="background-color: rgba(255, 255, 255, 0.9);">
-        ${address.split(" ").slice(2).join(" ")}
+        ${ address.split(" ").length > 1 ? address.split(" ").slice(1).join(" ") : address}
       </div>
       <div class="text-white font-bold py-1 px-2" style="background-color: ${color};">
         ${text}
@@ -381,6 +381,7 @@ const fetchIncidentData = async () => {
 
     const response = await axios.get("http://localhost:8080/api/map/incidents", {
       params: { x: lng, y: lat },
+      withCredentials: false ,
     });
 
     const incidentData = response.data;
@@ -430,7 +431,7 @@ const fetchSafetyData = async () => {
     const legalCode = response.data.documents[0].code;
  
     // 안전도 관련 조회 -> 법정동 코드 말고 해당 좌표의 구를 받아서 검색 ㄱㄱㄱ
-    const safetyResponse = await axios.get(`http://localhost:8080/api/map/safetyScores?legalCode=${legalCode}`);
+    const safetyResponse = await axios.get(`http://localhost:8080/api/map/safetyScores?legalCode=${legalCode}`,{ withCredentials: false});
     if (safetyResponse.data.length > 0) {
       safetyResponse.data.forEach( async (data) => {
         const safetyScore = data.safetyScore 
