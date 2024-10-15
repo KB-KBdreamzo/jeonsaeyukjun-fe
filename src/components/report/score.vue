@@ -20,7 +20,7 @@
       <div class="text-lg">
         해당 집의 종합 보증금 안전 진단 결과 {{ safetyStatus }}입니다.
         <br />
-        예측 손실액은 {{ estimatedLoss }}원이며, 위험 진단 요소는 {{ riskFactor }}건입니다.
+        예측 손실액은 {{ estimatedLoss.toLocaleString() }}, 위험 진단 요소는 {{ riskFactor }}건입니다.
       </div>
       <svg 
         class="absolute right-80 text-gray-900 transition duration-500 group-hover:text-gray-600" 
@@ -127,9 +127,10 @@ const safetyStatus = computed(() => {
 });
 
 const estimatedLoss = computed(() => {
+  if (reportStore.reportData.nowPrice < 0) return '알 수 없으며';
   const loss = parseInt( reportStore.reportData.nowPrice * reportStore.reportData.salePriceRatio /100) 
                 - reportStore.reportData.registerDto.priorityDeposit - reportStore.reportData.deposit
-  return loss > 0 ? 0 : -loss
+  return loss > 0 ? 0 : (-loss).toLocaleString() + " 원 이며"
 });
 
 const riskFactor = computed(() => {
