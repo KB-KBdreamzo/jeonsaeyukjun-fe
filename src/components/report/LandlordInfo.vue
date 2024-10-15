@@ -26,8 +26,8 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useReportStore } from '@/stores/reportStore'; // reportStore 가져오기
-import StatusBadge from "@/components/report/StatusBadge.vue"; // StatusBadge 컴포넌트 가져오기
+import { useReportStore } from '@/stores/reportStore'; 
+import StatusBadge from "@/components/report/StatusBadge.vue"; 
 
 const reportStore = useReportStore();
 const landlordInfo = computed(() => [

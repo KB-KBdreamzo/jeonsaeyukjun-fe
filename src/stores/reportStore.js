@@ -23,6 +23,10 @@ export const useReportStore = defineStore('reportStore', {
             detailAddress: report.detailedAddress,
             legalCode: report.legalCode,
             registerDto: registerStore.registerData
+          },{
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}` 
+            }
           }
         );
         this.reportId = response.data
