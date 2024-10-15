@@ -10,7 +10,9 @@ import MypageView from "@/views/mypage/MypageView.vue";
 import MypageReportView from "@/views/mypage/MypageReportView.vue";
 import MypageContractView from "@/views/mypage/MypageContractView.vue";
 import KakaoOauth from "@/components/KakaoOauth.vue";
+import PdfViewer from '@/views/mypage/PdfViewer.vue';
 import { useUserStore } from "@/stores/userStore";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -75,6 +77,12 @@ const router = createRouter({
       name: "kakaoOauth",
       component: KakaoOauth,
     },
+    {
+      path: '/pdf-viewer/:contractName',  
+      name: 'PdfViewer',
+      component: PdfViewer,
+      props: true 
+    }
   ],
 });
 

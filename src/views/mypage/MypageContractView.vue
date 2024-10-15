@@ -63,22 +63,22 @@
         </thead>
         <tbody>
           <tr
-            v-for="(report, index) in paginatedReports"
+            v-for="(contract, index) in paginatedContracts"
             :key="index"
             class="border-b hover:bg-gray-50"
           >
-            <td class="p-4">{{ report.address }}</td>
-            <td class="p-4">{{ formatPrice(report.deposit) }}</td>
-            <td class="p-4">{{ report.createdAt }}</td>
+            <td class="p-4">{{ contract.reportAddress }}</td>
+            <td class="p-4">{{ formatPrice(contract.reportDeposit) }}</td>
+            <td class="p-4">{{ new Date(contract.uploadTime).toLocaleDateString() }}</td>
             <td class="p-4 flex space-x-2 justify-end">
               <button
-                @click="viewReport(report)"
+                @click="viewContract(contract)"
                 class="bg-buttonBeige text-gray-500 px-4 py-1 rounded-full hover:bg-gray-200"
               >
                 확인
               </button>
               <button
-                @click="deleteReport(index)"
+                @click="deleteContract(index)"
                 class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-300"
               >
                 삭제
@@ -108,26 +108,49 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import { useUserStore } from '@/stores/userStore';
+import { useRouter } from 'vue-router'; 
+
+const router = useRouter(); 
 
 const searchQuery = ref('');
 const isSortDropdownOpen = ref(false);
 const sortKey = ref('latest');
 const currentPage = ref(1);
 const perPage = 5;
+const contractList = ref([]); 
 
-const reports = ref([
-  { address: "강서구 방화대로47가길 22", deposit: 420000000, createdAt: "2024.09.11 11:00" },
-  { address: "강서구 양천로26길 24-10", deposit: 280000000, createdAt: "2024.09.11 15:00" },
-  { address: "강서구 방화대로 351", deposit: 370000000, createdAt: "2024.09.12 18:00" },
-  { address: "강서구 등촌로39마길 4", deposit: 210000000, createdAt: "2024.09.13 8:00" },
-  { address: "양천구 목동동로12길 55-9", deposit: 210000000, createdAt: "2024.09.16 15:00" },
-]);
+const userStore = useUserStore();
+const userId = userStore.getUser().userId;
 
-const filteredReports = computed(() => {
-  return reports.value.filter(report =>
-    report.address.includes(searchQuery.value)
+const viewContract = (contract) => {
+  router.push({
+    name: 'PdfViewer',
+    params: { contractName: contract.contractName },
+  });
+};
+
+// 계약서 목록 반환
+const fetchContracts = async (userId) => {
+  try {
+    console.log("userId: ", userId);
+    const response = await axios.get(`http://localhost:8080/api/contract/list/${userId}`);
+    console.log("response: ", response.data);
+    contractList.value = response.data; 
+  } catch (error) {
+    console.error('데이터를 불러오는 중 오류 발생:', error);
+  }
+};
+
+onMounted(() => {
+  fetchContracts(userId); // 계약서 데이터 조회
+});
+
+const filteredContracts = computed(() => {
+  return (contractList.value || []).filter(contract =>
+  contract.reportAddress && contract.reportAddress.includes(searchQuery.value)
   ).sort((a, b) => 
     sortKey.value === 'latest' 
       ? new Date(b.createdAt) - new Date(a.createdAt) 
@@ -135,13 +158,14 @@ const filteredReports = computed(() => {
   );
 });
 
-const paginatedReports = computed(() => {
+
+const paginatedContracts = computed(() => {
   const start = (currentPage.value - 1) * perPage;
-  return filteredReports.value.slice(start, start + perPage);
+  return filteredContracts.value.slice(start, start + perPage);
 });
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredReports.value.length / perPage);
+  return Math.ceil(filteredContracts.value.length / perPage);
 });
 
 const sortButtonText = computed(() => {
@@ -169,6 +193,6 @@ const formatPrice = (value) => {
 
 <style scoped>
 .container {
-  width: 80%; /* 전체 컨테이너의 너비를 80%로 설정 */
+  width: 80%; 
 }
 </style>
