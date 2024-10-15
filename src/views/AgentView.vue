@@ -185,6 +185,7 @@
           page: currentPage.value, 
           size: perPage.value, 
         },
+        withCredentials: false,
       });
       agents.value = response.data.agents; 
       totalPages.value = response.data.totalPages;
