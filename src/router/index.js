@@ -10,6 +10,7 @@ import MypageView from "@/views/mypage/MypageView.vue";
 import MypageReportView from "@/views/mypage/MypageReportView.vue";
 import MypageContractView from "@/views/mypage/MypageContractView.vue";
 import KakaoOauth from "@/components/KakaoOauth.vue";
+import { useUserStore } from "@/stores/userStore";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,4 +77,21 @@ const router = createRouter({
     },
   ],
 });
+
+// 네비게이션 가드 설정
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore();
+  const userId = userStore.userId; 
+
+  if (to.name === 'reportInput' && !userId || to.name === 'reportResult' && !userId
+    || to.name === 'mypage' && !userId || to.name === 'contract' && !userId
+    || to.name === 'mypageReport' && !userId || to.name === 'mypageContract' && !userId
+  ) {
+    alert('로그인 후 이용해 주세요.');
+    next({ name: 'home' }); 
+  } else {
+    next(); 
+  }
+});
+
 export default router;
