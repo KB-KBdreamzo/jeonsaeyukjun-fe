@@ -168,6 +168,9 @@ const fetchReportLists = async() => {
         sortKey: sortKey.value,
         query: searchQuery.value,
       },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
     });
     reportList.value = reportResponse.data.reports.map((report) => ({
       ...report,

@@ -110,10 +110,14 @@ const calculateStatus = (safetyScore) => {
 };
 
 const fetchReports = async (userId) => {
+  console.log(localStorage.getItem("token"))
   try {
     const reportResponse = await axios.get(
-      `http://localhost:8080/api/report/${userId}?sortKey=latest&page=1&size=4`
-    );
+      `http://localhost:8080/api/report/${userId}?sortKey=latest&page=1&size=4`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`
+        }
+      });
     reportList.value = reportResponse.data.reports.map((report) => ({
       ...report, 
       status: calculateStatus(report.safetyScore), 
