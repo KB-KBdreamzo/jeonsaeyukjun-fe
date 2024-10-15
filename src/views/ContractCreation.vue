@@ -2,7 +2,7 @@
     <main class="flex h-screen overflow-hidden">
     <!-- flex: 요소를 Flexbox 레이아웃 설정, h-screen: 요소의 높이를 화면 전체 높이(100vh)로 설정, overflow-hidden: 요소가 화면을 벗어나는 내용이 있을 때 이를 숨김(스크롤이 생기지 않음)-->
         <!-- Left Side: 계약서 작성 섹션 -->
-        <section class="border-gray-300 h-full overflow-y-auto overflow-x-hidden w-[480px] lg:w-[480px] sm:w-full shadow-lg">
+        <section class="border-gray-300 h-full overflow-y-auto overflow-x-hidden w-[480px] lg:w-[480px] sm:w-full shadow-lg z-40">
             <div class="flex flex-col flex-1 max-w-full w-[378px]">
                 <header class="flex gap-10 items-center py-8 w-full font-bold">
                     <h1 class="self-stretch my-auto text-5xl tracking-tighter leading-none text-zinc-800 max-md:text-4xl whitespace-nowrap">
@@ -113,6 +113,7 @@
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, toRaw } from 'vue';
+import { useUserStore } from "@/stores/userStore";
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import ContractModal from '@/components/contract/ContractModal.vue'
@@ -137,6 +138,10 @@ export default defineComponent({
     setup() {
         // 상태 관리
         const isContractModalOpen = ref(false);
+
+        //userStore로부터 userId 가져오기
+        const userStore = useUserStore();
+        const userId = userStore.userId;
 
         const landlordName = ref('');
         const landlordAddress = ref('');
@@ -338,10 +343,12 @@ export default defineComponent({
                     todayMonth: firstContractDto.value.todayMonth,
                     todayDay: firstContractDto.value.todayDay,
                     landlordPhone: landlordPhone.value,
-                    tenantPhone: tenantPhone.value
+                    tenantPhone: tenantPhone.value,
                 },
+                userId: userId,
                 ownershipInfoDto: reportId !== 0 ? ownershipInfoDto.value : null
             };
+            console.log('userId: ', userId);
             console.log('ownershipInfoData.value: ', ownershipInfoDto.value);
             axios.post('http://localhost:8080/api/contract/generate', requestData)
                 .then(response => {

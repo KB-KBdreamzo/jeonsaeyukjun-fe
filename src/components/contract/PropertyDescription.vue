@@ -10,6 +10,7 @@
             style="cursor: pointer;"
             />
             <PropertyDescriptionModal v-if="isPropertyDescriptionModalOpen" @close="closePropertyDescriptionModal" />
+
         </header>
         <div class="flex flex-col px-1.5 mt-6 w-full">
             <label for="propertyAddress" class="w-full text-base font-bold leading-none text-gray-400 uppercase whitespace-nowrap">
@@ -22,7 +23,57 @@
                 @input="updateInput('propertyAddress', $event)"
                 class="overflow-hidden flex-1 shrink gap-2.5 self-stretch px-4 py-3.5 my-auto w-full bg-white rounded-xl min-h-[50px] min-w-[240px]"
                 placeholder="도로명 주소를 입력해주세요"
+                disabled
             />
+
+            <!-- 상단에 입력받지 못하게 disabled 설정을 하고 하단에 주소 입력 API 추가 -->
+            <!-- 주소지 및 상세주소 입력 부분 -->
+			<div class="flex flex-col mt-5 w-full">
+                <div class="mb-4 relative">
+                    <label class="block text-base font-bold leading-none text-gray-400 uppercase">주소지</label>
+                    <div class="flex items-center gap-2.5 border border-gray-300 rounded-lg p-2 mt-2.5 h-10">
+                        <input
+                            type="text"
+                            v-model="addressInput"
+                            placeholder="예) 역삼 푸르지오"
+                            class="flex-1 h-full px-4 text-sm font-medium leading-6 text-slate-500 focus:outline-none"
+                            @keyup.enter="onSearchClick"
+                        />
+                        <button class="flex justify-center items-center" @click="clearInput">     
+                            <img src="/src/assets/cancel.png" class="h-4 w-4">
+                        </button>
+                        <button class="flex justify-center items-center" @click="onSearchClick">
+                            <img src="/src/assets/search.png" class="h-6 w-6">
+                        </button>
+                    </div>
+
+                    <!-- 절대 위치를 사용해 ul 리스트를 input 바로 아래에 표시 -->
+                    <ul
+                    v-if="showResults && addressStore.addressResults.length"
+                    class="absolute left-0 w-full bg-white border border-gray-300 max-h-48 overflow-y-auto mt-2 z-10"
+                    >
+                        <li
+                            v-for="(result, index) in addressStore.addressResults"
+                            :key="index"
+                            @click="selectAddress(result)"
+                            class="p-2 hover:bg-gray-200"
+                        >
+                            {{ result.jibunAddr }} / {{ result.roadAddr }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <label class="mb-4 block text-base font-bold leading-none text-gray-400 uppercase">상세주소</label>
+                    <input
+                    type="text"
+                    v-model="detailedAddress"
+                    placeholder="동, 호수 입력 (동 없을 경우 호수만 입력)"
+                    class="w-full h-10 px-4 text-sm font-medium leading-6 text-slate-500 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
+            </div>
+        
         </div>
         <div class="flex flex-col mt-6 w-full">
             <label for="landUsage" class="text-base font-bold leading-none text-gray-400 uppercase">
@@ -108,6 +159,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
 import PropertyDescriptionModal from './PropertyDescriptionModal.vue';
+import { useAddressStore } from '@/stores/addressStore';
 
 export default defineComponent({
     name: 'PropertyDescription',
@@ -149,7 +201,11 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        // Local state
+
+        const addressStore = useAddressStore();
+		const addressInput = ref('');
+		const showResults = ref(false);
+		const detailedAddress = ref('');
         const isPropertyDescriptionModalOpen = ref(false);
 
         const localPropertyAddress = ref(props.propertyAddress);
@@ -160,14 +216,31 @@ export default defineComponent({
         const localRentalPortion = ref(props.rentalPortion);
         const localRentalArea = ref(props.rentalArea);
 
-        // Update input and emit change to parent
+        const onSearchClick = async () => {
+			if (addressInput.value) {
+				await addressStore.fetchAddress(addressInput.value);
+				showResults.value = true;
+			}
+		};
+
+        const clearInput = () => {
+			addressInput.value = '';
+			addressStore.addressResults = [];
+			showResults.value = false;
+		};
+
+        const selectAddress = (result) => {
+			addressStore.selectAddress(result);
+			addressInput.value = result.roadAddr;
+			showResults.value = false;
+		};
+
         const updateInput = (type: string, event: Event) => {
             const input = (event.target as HTMLInputElement).value;
             emit('update-property', type, input);
         };
 
         const openPropertyDescriptionModal = () => {
-            alert("클릭됨");
             isPropertyDescriptionModalOpen.value = true;
         }
 
@@ -175,7 +248,13 @@ export default defineComponent({
             isPropertyDescriptionModalOpen.value = false;
         }
 
-        // Watch for prop changes and update local state
+        // detailedAddress와 addressInput의 변화를 감지하여 localLandlordAddress 업데이트
+		watch([addressInput, detailedAddress], ([newAddressInput, newDetailedAddress]) => {
+			localPropertyAddress.value = `${newAddressInput} ${newDetailedAddress}`.trim();
+
+			// 업데이트된 주소 값을 부모 컴포넌트로 전달
+			emit('update-input', 'landlordAddress', localPropertyAddress.value);
+		});
         watch(() => props.propertyAddress, (newValue) => {
             localPropertyAddress.value = newValue;
         });
@@ -199,6 +278,10 @@ export default defineComponent({
         });
 
         return {
+            addressStore,
+            addressInput,
+            showResults,
+            detailedAddress,
             isPropertyDescriptionModalOpen,
             localPropertyAddress,
             localLandUsage,
@@ -207,6 +290,9 @@ export default defineComponent({
             localBuildingArea,
             localRentalPortion,
             localRentalArea,
+            onSearchClick,
+            clearInput,
+            selectAddress,
             openPropertyDescriptionModal,
             closePropertyDescriptionModal,
             updateInput

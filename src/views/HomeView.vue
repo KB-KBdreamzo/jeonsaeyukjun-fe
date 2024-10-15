@@ -20,7 +20,7 @@
       </div>
       <!-- 다섯 개의 동일한 섹션 -->
       <div
-        style="height: 1000px"
+        style="height: 840px"
         class="h-screen flex justify-center items-center bg-white relative"
       >
         <div class="absolute" style="top: 50px; left: 150px">
@@ -65,7 +65,10 @@
           src="/src/assets/contract_img.svg"
         />
       </div>
-      <div class="h-screen flex justify-center items-center bg-white relative">
+      <div
+        style="height: 840px"
+        class="h-screen flex justify-center items-center bg-white relative"
+      >
         <div class="absolute" style="top: 50px; left: 150px">
           <div data-aos="fade-right" class="bg-opacity-60 p-10 rounded-lg">
             <h1 class="text-3xl text-blue-500">공인중개사</h1>
@@ -78,13 +81,29 @@
           </div>
         </div>
       </div>
+      <div
+        style="height: 840px"
+        class="h-screen flex justify-center items-center bg-white relative"
+      >
+        <div class="absolute" style="top: 50px; left: 150px">
+          <div data-aos="fade-right" class="bg-opacity-60 p-10 rounded-lg">
+            <h1 class="text-3xl text-blue-500">지도</h1>
+            <p class="text-5xl font-semibold text-black mt-10">
+              내 위치에 정확하게
+            </p>
+            <p class="text-5xl font-semibold text-black mt-4">
+              꼼꼼히 확인하시겠습니까?
+            </p>
+          </div>
+        </div>
+      </div>
       <!-- 부가 정보 4 섹션 -->
       <div
         class="h-screen flex flex-col justify-center items-center bg-gray-800 relative"
       >
         <div
           class="absolute text-center"
-          style="top: 90px; left: 50%; transform: translateX(-50%)"
+          style="top: 140px; left: 50%; transform: translateX(-50%)"
         >
           <div data-aos="flip-down" class="bg-opacity-60 p-10 rounded-lg">
             <h1 class="text-5xl font-semibold text-white">
