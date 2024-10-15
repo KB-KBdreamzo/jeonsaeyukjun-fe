@@ -4,11 +4,7 @@
       class="flex justify-between items-center p-2 bg-white fixed top-0 w-full z-50 border-b"
     >
       <div class="flex items-center ml-20 cursor-pointer" @click="goToHome">
-        <img
-          src="@/assets/logo.png"
-          alt="전세역전 로고"
-          class="w-12 h-12 mr-2"
-        />
+        <img src="@/assets/logo.png" alt="전세역전 로고" class="w-12 h-12 mr-2" />
         <span class="text-xl font-custom">전세역전</span>
       </div>
       <nav class="mr-40">
@@ -74,6 +70,7 @@
       @close="closeTermsOfUseModal"
     />
   </div>
+
 </template>
 
 <script setup>

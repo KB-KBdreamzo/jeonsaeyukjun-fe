@@ -11,11 +11,16 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
   status: {
     type: [String, Boolean], 
     required: true
   }
 });
-const hasRecord = props.status && props.status !== '없 음';
+
+const hasRecord = computed(() => {
+  return props.status && props.status !== '없 음';
+});
 </script>

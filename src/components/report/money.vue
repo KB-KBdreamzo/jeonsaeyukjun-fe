@@ -9,7 +9,7 @@
         >
           <div class="font-semibold">{{ item.label }}</div>
           <div class="font-normal">
-            {{ item.value >= 0 ? item.value.toLocaleString() + (item.unit || ' 원') : '알 수 없음' }}
+            {{ item.value > 0 ? item.value.toLocaleString() + (item.unit || ' 원') : '알 수 없음' }}
           </div>
         </div>
       </div>
