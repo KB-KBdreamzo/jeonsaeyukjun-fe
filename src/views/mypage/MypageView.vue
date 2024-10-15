@@ -14,15 +14,15 @@
           />
         </div>
         <div>
-          <h2 class="text-3xl font-bold">아자핑</h2>
-          <p class="text-gray-600 mt-2">yundabin0608@naver.com</p>
+          <h2 class="text-3xl font-bold">{{ username}}</h2>
+          <p class="text-gray-600 mt-2">{{ email }}</p>
         </div>
       </div>
       <button
         @click="logout"
         class="border bg-gray-800 text-white px-4 py-1 rounded-full hover:bg-gray-300"
       >
-        Logout
+        로그아웃
       </button>
     </div>
 
@@ -90,11 +90,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/userStore";
 
+const username = ref("")
+const email = ref("")
 const router = useRouter();
 const userStore = useUserStore();
 const reportList = ref([]);
@@ -104,11 +106,18 @@ const contractList = ref([
   { address: "강서구 방화대로 351" },
 ]);
 
+onMounted(()=>{
+  username.value = userStore.username;
+  email.value = userStore.email;
+});
+
 const getStatusClass = (status) => {
-  if (status === "안전") return "bg-green-400";
-  if (status === "양호" || status === "보통") return "bg-yellow-300";
-  if (status === "위험" || status === "주의") return "bg-red-400";
-  return "bg-gray-300";
+  if (status === '안전') return 'bg-badge-bg-blue text-badge-txt-blue';
+  if (status === '양호') return 'bg-badge-bg-green text-badge-txt-green';
+  if (status === '보통') return 'bg-badge-bg-yellow text-badge-txt-yellow';
+  if (status === '주의') return 'bg-badge-bg-orange text-badge-txt-orange';
+  if (status === '위험') return 'bg-badge-bg-red text-badge-txt-red';
+  return 'bg-badge-bg-no text-badge-txt-no';
 };
 
 const calculateStatus = (safetyScore) => {
@@ -140,7 +149,11 @@ const fetchReports = async (userId) => {
 const logout = async () => {
   try {
     // 로그아웃 API 호출
-    await axios.post("http://localhost:8080/api/login/logout");
+    await axios.post("http://localhost:8080/api/login/logout", {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }}
+    );
 
     userStore.clearUser();
     console.log("userStore.getUser() : ", userStore.getUser());
